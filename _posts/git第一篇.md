@@ -38,11 +38,15 @@ git checkout HEAD <file>  # 会用 HEAD 指向的 master 分支中的全部或�
 git init   # 在任意文件夹初始化仓库
 git add *
 git commit -m "copy1"
+git push # 有时需要运行
 
 git clone <repo> <directory> #拷贝到特定目录
 # git status 显示你上次提交更新后的更改或者写入缓存的改动， 而 git diff 一行一行地显示这些改动具体是啥。
 
 git commit -am "" # 一步解决
+add的操作让文件存在于stage（暂存区）中，
+commit的将stage中的文件剪切到本地仓库
+push是将本地仓库中的文件剪切到远程仓库
 ```
 
 
