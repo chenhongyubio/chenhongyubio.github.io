@@ -50,7 +50,7 @@ import scvelo as scv
 scv.settings.set_figure_params('scvelo')   # 设置matplotlib settings可视化
 adata = scv.read(filename, cache=True)  # 读入数据(loom/h5ad/csv格式)
 ```
-![数据结构](img/2026-1.svg)
+![数据结构](img/2026-1.png)
 ```
 # 如果之前已经存在adata对象，可以直接merge剪接未剪接矩阵
 ldata = scv.read(filename.loom, cache=True)
