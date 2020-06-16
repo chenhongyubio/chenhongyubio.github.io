@@ -1,6 +1,6 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      Snakemak				# 标题 
+title:      Snakemake				# 标题 
 subtitle:   生信分析流程搭建 #副标题
 date:       2020-06-16				# 时间
 author:     CHY					# 作者
