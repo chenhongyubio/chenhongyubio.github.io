@@ -108,3 +108,61 @@ Coefficients中第一个参数Estimate相当于直线与Y轴的截距，Std. Err
 
 ![两种变量](https://github.com/chenhongyubio/chenhongyubio.github.io/raw/master/img/逻辑回归--极大似然1.png)
 
+#### 逻辑回归中的R2 and p-values
+存在多种方法来计算，并没有得出一个共识。<br>
+McFadden's Pseudo R2一种常用且简单的计算方法。<br>
+线性模型中R2越大，拟合效果越好。<br>
+![线性模型R2计算.png](https://github.com/chenhongyubio/chenhongyubio.github.io/raw/master/img/线性模型R2计算.png)
+![](https://github.com/chenhongyubio/chenhongyubio.github.io/raw/master/img/宋.png)
+
+#### 逻辑回归R实现
+```
+# 数据处理
+url <- "http://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data"
+data <- read.csv(url,header = FALSE)
+head(data)
+colnames(data) <- c("age","sex","cp","trestbps","chol","fbs","restecg","thalach","exang",'oldpeak","slope","ca","thal","hd")
+head(data)
+str(data)
+data[data == "?"] <- NA
+data[data$sex == 0,]$sex <- "F"
+data[data$sex == 1,]$sex <- "M"
+data$sex <-as.factor(data$sex)
+data$cp <-as.factor(data$cp)
+data$fbs <-as.factor(data$fbs)
+data$restecg <-as.factor(data$restecg)
+data$exang <-as.factor(data$exang)
+data$slope <-as.factor(data$slope)
+data$ca <-as.integer(data$ca) 
+data$ca <-as.factor(data$ca)
+data$thal <-as.integer(data$thal)
+data$thal <-as.factor(data$thal)
+data$hd <-ifelse(test=data$hd == 0, yes= "Healthy", no="Unhealthy")
+data$hd <-as.factor(data$hd)
+str(data)
+nrow(data[is.na(data$ca) | is.na(data$tha),])
+data[is.na(data$ca) | is.na(data$thal),]
+data <- data[!(is.na(data$ca) | is.na(data$thal)),]
+nrow(data)
+xtabs(~ hd + sex,data = data)
+xtabs(~ hd + cp,data = data)
+xtabs(~ hd + fbs,data = data)
+# 逻辑回归
+logistic <- glm(hd ~ sex,data = data,family="binomial")
+summary(logistic)
+logistic <- glm(hd ~ ,data = data,family="binomial")
+ll.null <- logistic$null.deviance/-2
+ll.proposed <- logistic$deviance/-2
+(ll.null - ll.proposed) / ll.null
+1- pchisq(2*(ll.proposed - ll.null),df=(length(logistic$coefficients)-1))
+# 绘图
+predicted.data <- data.frame(probability.of.hd = logistic$fitted.values,hd=data$hd)
+predicted.data <- predicted.data[order(predicted.data$predicted.of.hd,decreasing=FALSE),]
+predicted.data$rank <- 1:nrow(predicted.data)
+library(ggplot2)
+library(cowplot)
+ggplot(data-predicted.data, aes(x=rank, y=probability.of.hd)) +
+    geom.point(aes(color=hd), alpha=1, shape=4, stroke=2) +
+    xlab("Index") +
+    ylab("Predicted probability of getting heart disease")
+```
