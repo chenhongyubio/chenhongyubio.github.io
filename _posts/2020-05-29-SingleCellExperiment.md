@@ -12,6 +12,7 @@ tags:								#标签
 
 对单细胞数据常用的数据结构SingleCellExperiment(简称SCE)进行学习，了解数据存储结构等。
 主要参考：[Bioconductor中的教程](https://bioconductor.org/packages/devel/bioc/vignettes/SingleCellExperiment/inst/doc/intro.html) <br>
+[理解scRNA常用数据结构](https://mp.weixin.qq.com/s/i-JvUx9ldCfOBtRxoeaTbA)<br>
 
 SCE对象特点：行为基因，列为细胞，同时还存储降维信息等。<br>
 ![对象数据结构](img/SingleCellExperiment.webp) <br>
