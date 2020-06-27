@@ -7,7 +7,7 @@ author:     CHY					# 作者
 header-img: img/wallhaven-2064.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
 tags:								#标签
-    - 计算机
+    - 机器学习
 ---
 本节主要记录StatQuest中机器学习部分的内容。
 
