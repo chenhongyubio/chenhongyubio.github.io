@@ -171,3 +171,70 @@ labels=['sampleA', 'sampleB', 'sampleC', 'sampleD']
 plt.pie(x=data, labels=labels, autopct=lambda pct:'({:.1f}%)\n{:d}'.format(pct, int(pct/100 * sum(data))))
 plt.legend(labels,loc="upper left",bbox_to_anchor=(1.2, 0, 0.5, 1))
 ```
+
+#### matplotlib 基础绘图命令之 scatter
+
+scatter 方法用于绘制散点图，与 plot 方法不同之处在于，scatter 主要用于绘制点的颜色和大小呈现梯度变化的散点图，也就是我们常说的气泡图。<br>
+
+```
+plt.scatter(x= np.random.randn(10), y=np.random.randn(10),s=40 * np.arange(10),c=np.random.randn(10))
+# x和y参数指定x轴和y轴坐标，s参数指定mark size, 即点的大小，c参数指定color,即颜色。scatter会根据数值自动进行映射
+# 难点在于其图例的处理上。scatter函数的返回值为一个PathCollections对象，通过其legend_elements方法，可以获得绘制图例所需的信息
+
+scatter = plt.scatter(x= np.random.randn(10), y=np.random.randn(10),s=40 * np.arange(10),c=np.random.choice(np.arange(4), 10))
+plt.legend(*scatter.legend_elements())
+
+scatter = plt.scatter(x= np.random.randn(10), y=np.random.randn(10),s=40 * np.arange(10),c=np.random.choice(np.arange(4), 10))
+plt.colorbar(scatter)
+
+# legend_elements方法是有很多参数可以调整的，其中prop参数指定返回的信息，有两种取值，默认是colors, 表示返回的是点的颜色信息，取值为sizes时，返回的是点的大小信息。另外还有一个参数是num, 当图例的取值为连续型时，num指定了图例上展示的点的个数
+scatter = plt.scatter(x= np.random.randn(10), y=np.random.randn(10),s=40 * np.arange(10),c=np.random.choice(np.arange(4), 10))
+plt.legend(*scatter.legend_elements(prop='sizes', num = 6))
+
+# 组合图例
+fig, ax = plt.subplots()
+scatter = ax.scatter(x= np.random.randn(10), y=np.random.randn(10),s=40 * np.arange(10),c=np.random.choice(np.arange(4), 10))
+legend1 = ax.legend(*scatter.legend_elements(prop='colors'), loc='upper left',title='colors',bbox_to_anchor=(1, 0, 0.5, 1))
+ax.add_artist(legend1)
+legend2 = ax.legend(*scatter.legend_elements(prop='sizes', num = 6), loc='lower left',title='sizes',bbox_to_anchor=(1, 0, 0.5, 1))
+```
+
+#### matplotlib 基础绘图命令之 errorbar
+
+在 matplotlib 中，errorbar 方法用于绘制带误差线的折线图。<br>
+
+```
+plt.errorbar(x=[1, 2, 3, 4], y=[1, 2, 3, 4], yerr=1)
+# yerr参数用于指定y轴水平的误差，同时该方法也支持x轴水平的误差，对应参数xerr。指定误差值有多种方式，上述代码展示的是指定一个统一标量的用法，此时，所以的点误差值都一样。
+plt.errorbar(x=[1, 2, 3, 4], y=[1, 2, 3, 4], yerr=[1, 2, 3, 4]) # 不同误差线
+plt.errorbar(x=[1, 2, 3, 4], y=[1, 2, 3, 4], yerr=[[1,2,3,4],[1, 2, 3, 4]]) # 每个点上下误差不一样
+```
+
+```
+# 样式更改
+# fmt参数的值和plot方法中指定点的颜色，形状，线条风格的缩写方式相同
+plt.errorbar(x=[1, 2, 3, 4], y=[1, 2, 3, 4], yerr=1, fmt='co--')
+# ecolor参数指定error bar的颜色，可以和折线的颜色加以区分
+plt.errorbar(x=[1, 2, 3, 4], y=[1, 2, 3, 4], yerr=1, fmt='co--', ecolor='g')
+# elinewidth参数指定error bar的线条宽度
+plt.errorbar(x=[1, 2, 3, 4], y=[1, 2, 3, 4], yerr=1, fmt='ro-',ecolor='k',elinewidth=10)
+
+# lims系列参数
+# lims系列参数用于控制误差线的显示，对于x轴水平的误差线而言，有以下两个参数
+# 1. xuplims
+# 2. xlolims
+# 对于y轴水平的误差线而言，有以下两个参数
+# 1. uplims
+# 2. lolims
+# 默认的取值为False， 当取值为True时，对应方向的误差线不显示，同时在另外一个方向上的误差线上，会用箭头加以标识。
+plt.errorbar(x=[1, 2, 3, 4], y=[1, 2, 3, 4], yerr=1, uplims=True)
+plt.errorbar(x=[1, 2, 3, 4], y=[1, 2, 3, 4], yerr=1, lolims=True)
+plt.errorbar(x=[1, 2, 3, 4], y=[1, 2, 3, 4], yerr=1, uplims=True, lolims=True)
+
+# errorevery参数用于指定误差线的抽样频率，默认情况下，每个点的误差线都会显示，当点很多且密集分布时, 每个点都显示误差线的话，就很难看出有效的信息，
+plt.errorbar(x=range(100), y=range(100),yerr=50)
+plt.errorbar(x=range(100), y=range(100),yerr=50,errorevery=6) # 使用errorevery参数进行抽样
+
+# 样式精细调整
+plt.errorbar(x=[1, 2, 3, 4], y=[1, 2, 3, 4], yerr=1, marker='s', mfc='red', mec='green', ms=20, mew=4)
+```
