@@ -238,3 +238,75 @@ plt.errorbar(x=range(100), y=range(100),yerr=50,errorevery=6) # 使用errorevery
 # 样式精细调整
 plt.errorbar(x=[1, 2, 3, 4], y=[1, 2, 3, 4], yerr=1, marker='s', mfc='red', mec='green', ms=20, mew=4)
 ```
+
+#### 一文搞懂 matplotlib 中的颜色设置
+
+##### 常用颜色的字母表示及缩写
+
+```
+1. red,表示红色,  简写为r
+2. green, 表示绿色，简写为g
+3. blue,表示蓝色，简写为b
+4. yellow,表示黄色，简写为y
+5. cyan,表示蓝绿色，简写为c
+6. magenta,表示粉紫色，简写为m
+7. black,表示黑色，简写为k
+8. white,表示白色，简写为w
+```
+
+##### T10 调色盘
+
+在 matplotlib 中，默认的颜色盘通过**参数 rcParams["axes.prop_cycle"]参数**来指定, 初始的调色盘就是 T10 调色盘。<br>
+T10 调色盘适用于离散分类，其颜色名称以 tab:为前缀。<br>
+在 matplotlib 中，默认就是通过这个 T10 调色盘来个不同的 label 上色的。<br>
+
+```
+1. tab:blue
+2. tab:orange
+3. tab:green
+4. tab:red
+5. tab:purple
+6. tab:brown
+7. tab:pink
+8. tab:gray
+9. tab:olive
+10. tab:cyan
+```
+
+##### CN 式写法
+
+CN 式写法以字母 C 为前缀，后面加从 0 开始的数字索引，其索引的对象为 rcParams["axes.prop_cycle"]指定的调色盘。CN 式对应调色板，当切换调色板时，CN 也会对应改变<br>
+
+##### xkcd 颜色名称
+
+在 matplotlib 中，通过 xkcd:前缀加对应的颜色名称进行使用，而且是不区分大小写的。具体网站为：https://xkcd.com/color/rgb/ <br>
+
+##### X11/CSS4 颜色名称
+
+```
+# 通过字典查看颜色
+import matplotlib._color_data as mcd
+for key in mcd.CSS4_COLORS:
+    print('{}: {}'.format(key, mcd.CSS4_COLORS[key]))
+```
+
+##### 十六进制颜色代码
+
+```
+# 十六进制的颜色代码可以精确的指定颜色，在matplotlib中也支持
+plt.pie(x=[1,2,3,4], colors=['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728'])
+```
+
+##### RGB/RGBA 元组
+
+```
+# 所有的颜色都是有RGB三原色构成，在matplotlib中，可以通过一个元组来表示表示red, green, blue三原色的比例，以及一个可选的alpha值来表示透明度，取值范围都是0到1
+plt.pie(x=[1,2,3,4], colors=[(0.1, 0.2, 0.5),(0.1, 0.3, 0.5),(0.1, 0.4, 0.5),(0.1, 0.5, 0.5)])
+```
+
+##### 灰度颜色
+
+```
+# 在matplotlib中，通过0到1之间的浮点数来对应灰度梯度，在使用时，为了有效区分，需要通过引号将其装换为字符
+plt.pie(x=[1,2,3,4], colors=['0','0.25', '0.5', '0.75'])
+```
