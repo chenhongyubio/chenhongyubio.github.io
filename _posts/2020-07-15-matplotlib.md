@@ -310,3 +310,119 @@ plt.pie(x=[1,2,3,4], colors=[(0.1, 0.2, 0.5),(0.1, 0.3, 0.5),(0.1, 0.4, 0.5),(0.
 # 在matplotlib中，通过0到1之间的浮点数来对应灰度梯度，在使用时，为了有效区分，需要通过引号将其装换为字符
 plt.pie(x=[1,2,3,4], colors=['0','0.25', '0.5', '0.75'])
 ```
+
+#### matplotlib 基础绘图命令之 hist
+
+hist 方法用于绘制直方图。<br>
+
+```
+plt.hist(x = np.random.normal(size=1000))
+```
+
+具体参数：<br>
+
+1. bins,控制直方图中的区间个数
+2. color,指定柱子的填充色
+3. edgecolor, 指定柱子边框的颜色
+4. density,指定柱子高度对应的信息，有数值和频率两种选择
+5. orientation，指定柱子的方向，有水平(horizontal)和垂直(vertical)两个方向
+6. histtype，绘图的类型 bar、step
+
+#### matplotlib 基础绘图命令之 boxplot
+
+```
+plt.boxplot(x=np.random.normal(size=1000))
+```
+
+具体参数：<br>
+
+1. notch,控制箱体图的形状,控制是否在图中显示中位数的置信区间(True)
+2. sym, 控制离群点的样式
+3. vert,控制箱体的方向,True 竖直，False 水平
+4. patch_artist，进行箱体图的颜色填充
+5. showmeans，显示均值
+6. labels, 指定 x 轴的坐标
+   boxplot 的返回值是一个字典,包括了箱体图中的各个元素<br>
+7. whiskers, 对应箱体图中箱体上下两侧竖直的线条
+8. caps, 对应箱体图中竖直线条端点的水平线段
+9. boxes, 对应箱体图中的主体方框
+10. medians,对应箱体图中的中位数线段
+11. fiers,对应箱体图中的离群点
+12. means,对应箱体图中表示均值的点
+
+#### matplotlib 基础绘图命令之 violinplot
+
+```
+plt.violinplot(dataset=np.random.normal(size=1000))
+```
+
+具体参数：<br>
+
+1. vert,控制图形的方向
+2. showmeans, 是否在图中显示均值
+3. showmedians,是否在图中显示中位数
+4. showextrema, 是否在图中显示最大值和最小值
+
+```
+np.random.seed(19680801)
+data = [np.random.normal(size=500), np.random.normal(size=1000)]
+violin = plt.violinplot(dataset=data, showextrema=False)
+for patch in violin['bodies']:
+    patch.set_facecolor('#D43F3A')
+    patch.set_edgecolor('black')
+    patch.set_alpha(1)
+for i,d in enumerate(data):
+    min_value,quantile1, median, quantile3, max_value = np.percentile(d, [0, 25, 50, 75, 100])
+    print(median)
+    plt.scatter(i+1, median, color='white',zorder=4)
+    plt.vlines(i+1,quantile1, quantile3, lw=9, zorder=3)
+    plt.vlines(i+1,min_value, max_value, zorder=2)
+plt.xticks(ticks=[1,2], labels=['A', 'B'])
+```
+
+#### matplotlib 基础绘图命令之 imshow
+
+imshow 方法用于绘制热图。<br>
+imshow 方法首先将二维数组的值标准化为 0 到 1 之间的值，然后根据指定的渐变色依次赋予每个单元格对应的颜色，就形成了热图。<br>
+
+```
+plt.imshow(data)
+plt.colorbar()  # 图例
+```
+
+1. cmap：指定渐变色，完整的内置 colormap 列表https://matplotlib.org/tutorials/colors/colormaps.html
+2. aspect：指定热图的单元格的大小，equal/auto
+3. alpha：指定透明度
+4. origin：指定绘制热图时的方向 upper/lower
+5. vmin 和 vmax：用于限定数值的范围
+6. interprolation：控制热图的显示形式 None/none/nearest/bilinear/bicubic
+7. extent：指定热图 x 轴和 y 轴的极值,前两个数值对应 x 轴的最小值和最大值，后两个参数对应 y 轴的最小值和最大值
+
+#### 渐变色
+
+1. sequential
+   1. perceptually uniform sequential colormaps
+   2. sequential colormaps
+   3. sequential2 colormaps
+2. diverging
+3. cyclic
+4. qualitative
+
+##### 自定义渐变色
+
+1. ListedColormap
+2. LinearSegmentedColormap
+
+#### 掌握坐标轴的 log 转换
+
+对于跨度很大其分布离散的数据，常用 log 转换来缩写其差距。<br>
+
+1. loglog, 同时对 x 轴和 y 轴的值进行 log 转换
+2. semilogx, 只对 x 轴的值进行 log 转换，y 轴的值不变
+3. semilogy, 只对 y 轴的值进行 log 转换，x 轴的值不变
+
+专属参数：<br>
+
+1. base, 指定对数的值，默认值为 10，即进行 log10 的转换
+2. subs，设定 minor ticks 的位置，默认值为 None
+3. nonpositive, 对非负值的处理，因为只有正数可以取 log, 如果原始值为负值，此时有两种处理方式，第一种是丢掉这个点，也是默认的处理方式，对应该参数的值为 mask, 在图中不显示这个点，第二种是将这个值调整为最接近的正数，对应该参数的取值为 clip
