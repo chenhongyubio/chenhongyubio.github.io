@@ -1,25 +1,31 @@
 ---
-layout:     post   				    # 使用的布局（不需要改）
-title:      RNA-velocity				# 标题 
-subtitle:   RNA-velocity相关软件流程分析 #副标题
-date:       2020-01-13 				# 时间
-author:     CHY					# 作者
-header-img: img/wallhaven-2023.jpg 	#这篇文章标题背景图片
-catalog: true 						# 是否归档
-tags:								#标签
-    - 单细胞
+layout: post # 使用的布局（不需要改）
+title: RNA-velocity # 标题
+subtitle: RNA-velocity相关软件流程分析 #副标题
+date: 2020-01-13 # 时间
+author: CHY # 作者
+header-img: img/wallhaven-2023.jpg #这篇文章标题背景图片
+catalog: true # 是否归档
+tags: #标签
+  - 单细胞
 ---
-## RNA velocity基本概念
+
+## RNA velocity 基本概念
+
 RNA velocity：the time derivative of the gene expression state can be directly estimated by distinguishing between unspliced and spliced mRNAs in common single-cell RNA sequencing protocols. a high-dimensional vector that predicts the future state of individual cells on a timescale of hours.
-也就是通过区分普通单细胞RNA测序中未剪接和剪接的mrna在小时的时间尺度上来直接估计预测单个细胞的未来状态。换句话说通过对unspliced(nascent) 和spliced(mature) mRNA丰度的评估在时间维度上揭示转录本动态变化。
+也就是通过区分普通单细胞 RNA 测序中未剪接和剪接的 mrna 在小时的时间尺度上来直接估计预测单个细胞的未来状态。换句话说通过对 unspliced(nascent) 和 spliced(mature) mRNA 丰度的评估在时间维度上揭示转录本动态变化。
 
 ## velocyto
-目前有Python和R两个版本可以运行。
+
+目前有 Python 和 R 两个版本可以运行。
+
 #### velocyto.py
+
 前提要求：Python >= 3.6.0
-Velocyto主要由两部分组成：
+Velocyto 主要由两部分组成：
 A command line interface(CLI)，用于生成拼接/非拼接表达式矩阵。
-A library：包含从上述数据矩阵估计RNA速度的函数的库
+A library：包含从上述数据矩阵估计 RNA 速度的函数的库
+
 ```
 ## 安装依赖的库
 conda install numpy scipy cython numba matplotlib scikit-learn h5py click
@@ -90,16 +96,27 @@ vlm.plot_grid_arrows(quiver_scale=0.6,
                     plot_random=True, scale_type="absolute")
 ```
 
-
-
 #### velocyto.R
-这里借助于[RNA velocity with kallisto | bus and velocyto.R](https://bustools.github.io/BUS_notebooks_R/velocity.html)来学习velocyto.R，因为官方的对我来说实在不太好理解。
-kallisto | bus pipeline可以更快的获得剪接的或者未剪接的转录本信息。
+
+这里借助于[RNA velocity with kallisto | bus and velocyto.R](https://bustools.github.io/BUS_notebooks_R/velocity.html)来学习 velocyto.R，因为官方的对我来说实在不太好理解。
+kallisto | bus pipeline 可以更快的获得剪接的或者未剪接的转录本信息。
 [kallisto](http://pachterlab.github.io/kallisto/manual.html)是一款快速比对软件，其最大的特点是不需要完整的参考基因组，但需要对物种的全转录本序列建立索引，再进行假比对。
-软件要求：[kallisto](https://pachterlab.github.io/kallisto/download) >= 0.46；[bustools](https://github.com/BUStools/bustools/releases) >= 0.39.3 bustools主要是针对10X数据分析，旨在替代cellranger。
-R包：BUSpaRse:转转录本为基因文件给bustools,同时读入bustools结果到R
-Seurat: [SeuratWrappers](https://github.com/satijalab/seurat-wrappers)直接分析RNA velocity
-velocyto.R：计算并可视化RNA velocity
+软件要求：[kallisto](https://pachterlab.github.io/kallisto/download) >= 0.46；[bustools](https://github.com/BUStools/bustools/releases) >= 0.39.3 bustools 主要是针对 10X 数据分析，旨在替代 cellranger。
+R 包：BUSpaRse:转转录本为基因文件给 bustools,同时读入 bustools 结果到 R
+Seurat: [SeuratWrappers](https://github.com/satijalab/seurat-wrappers)直接分析 RNA velocity
+velocyto.R：计算并可视化 RNA velocity
+
+##### kallisto | bustools
+
+```
+# 运行命令
+# 从基因组和基因组注释开始，建立转录组索引
+kb ref -i transcriptome.idx -g transcripts_to_genes.txt -f1 cdna.fa dna.primary_assembly.fa.gz gtf.gz
+
+# kb count uses kallisto to pseudoalign reads and bustools to quantify the data
+kb count -i index.idx -g t2g.txt -x 10xv2 --h5ad -t 2 read_1.fastq.gz read_2.fastq.gz
+
+```
 
 ```
 ## 安装
@@ -145,10 +162,10 @@ tar -xvf ./neuron_10k_v3_fastqs.tar
 ah <- AnnotationHub()
 query(ah, pattern = c("Ensembl", "97", "Mus musculus", "EnsDb"))
 edb <- ah[["AH73905"]]
-get_velocity_files(edb, L = 91, Genome = BSgenome.Mmusculus.UCSC.mm10, 
-                   out_path = "./output/neuron10k_velocity", 
+get_velocity_files(edb, L = 91, Genome = BSgenome.Mmusculus.UCSC.mm10,
+                   out_path = "./output/neuron10k_velocity",
                    isoform_action = "separate")
-# X:基因组注释文件edb；L:reads长度，10x V1,V2是98nt;V3是91nt. 
+# X:基因组注释文件edb；L:reads长度，10x V1,V2是98nt;V3是91nt.
 # Genome参数：DNAStringSet或者BSgenome对象，可以从对应基因组R包获取，也可以从Ensembl, RefSeq, or GenBank with biomartr::getGenome
 # Transcriptome：可以从基因组中提取
 # isoform_action：两种选择，基因亚型来自于选择性剪接或转录起始或终止位点
@@ -193,19 +210,19 @@ summary(tot_count)
 bc_rank <- barcodeRanks(spliced)
 bc_uns <- barcodeRanks(unspliced)
 # 绘制knee plot图
-tibble(rank = bc_rank$rank, total = bc_rank$total, matrix = "spliced") %>% 
-  bind_rows(tibble(rank = bc_uns$rank, total = bc_uns$total, matrix = "unspliced")) %>% 
-  distinct() %>% 
+tibble(rank = bc_rank$rank, total = bc_rank$total, matrix = "spliced") %>%
+  bind_rows(tibble(rank = bc_uns$rank, total = bc_uns$total, matrix = "unspliced")) %>%
+  distinct() %>%
   ggplot(aes(total, rank, color = matrix)) +
   geom_line() +
   geom_vline(xintercept = metadata(bc_rank)$knee, color = "blue", linetype = 2) +
   geom_vline(xintercept = metadata(bc_rank)$inflection, color = "green", linetype = 2) +
   geom_vline(xintercept = metadata(bc_uns)$knee, color = "purple", linetype = 3) +
   geom_vline(xintercept = metadata(bc_uns)$inflection, color = "cyan", linetype = 3) +
-  annotate("text", y = c(1000, 1000, 500, 500), 
+  annotate("text", y = c(1000, 1000, 500, 500),
            x = 1.5 * c(metadata(bc_rank)$knee, metadata(bc_rank)$inflection,
                        metadata(bc_uns)$knee, metadata(bc_uns)$inflectio),
-           label = c("knee (s)", "inflection (s)", "knee (u)", "inflection (u)"), 
+           label = c("knee (s)", "inflection (s)", "knee (u)", "inflection (u)"),
            color = c("blue", "green", "purple", "cyan")) +
   scale_x_log10() +
   scale_y_log10() +
@@ -224,7 +241,7 @@ bc2 <- bc_ranks2(s, u, sr, ur)
 # can't turn color to lot scale unless log values are plotted
 z_use <- log10(bc2)
 z_use[is.infinite(z_use)] <- NA
-plot_ly(x = sr, y = ur, z = z_use) %>% add_surface() %>% 
+plot_ly(x = sr, y = ur, z = z_use) %>% add_surface() %>%
   layout(scene = list(xaxis = list(title = "Total spliced UMIs", type = "log"),
                       yaxis = list(title = "Total unspliced UMIs", type = "log"),
                       zaxis = list(title = "Rank (log10)")))
@@ -239,7 +256,7 @@ dim(sf)
 ## 细胞类型注释
 # 利用SingleR使用分离的已知细胞类型的RNA-seq数据作为注释细胞类型的参考
 # Get gene names
-gns <- tr2g_EnsDb(edb)[,c("gene", "gene_name")] %>% 
+gns <- tr2g_EnsDb(edb)[,c("gene", "gene_name")] %>%
   distinct()
 data("mouse.rnaseq")
 # Convert from gene symbols to Ensembl gene ID
@@ -247,7 +264,7 @@ ref_use <- mouse.rnaseq$data
 rownames(ref_use) <- gns$gene[match(rownames(ref_use), gns$gene_name)]
 ref_use <- ref_use[!is.na(rownames(ref_use)),]
 annot <- SingleR("single", sf, ref_data = ref_use, types = mouse.rnaseq$types)
-ind <- annot$labels %in% c("NPCs", "Neurons", "OPCs", "Oligodendrocytes", 
+ind <- annot$labels %in% c("NPCs", "Neurons", "OPCs", "Oligodendrocytes",
                            "qNSCs", "aNSCs", "Astrocytes", "Ependymal")
 cells_use <- annot$cell.names[ind]
 sf <- sf[, cells_use]
@@ -255,12 +272,12 @@ uf <- uf[, cells_use]
 
 ## 质量控制
 # 剪接和未剪接矩阵都是需要归一化和缩放SCTransform(一个命令代替NormalizeData，ScaleData和FindVariableFeatures)
-seu <- CreateSeuratObject(sf, assay = "sf") %>% 
+seu <- CreateSeuratObject(sf, assay = "sf") %>%
   SCTransform(assay = "sf", new.assay.name = "spliced")
 seu[["uf"]] <- CreateAssayObject(uf)
 seu <- SCTransform(seu, assay = "uf", new.assay.name = "unspliced")
 # Add cell type metadata
-seu <- AddMetaData(seu, setNames(annot$labels[ind], cells_use), 
+seu <- AddMetaData(seu, setNames(annot$labels[ind], cells_use),
                    col.name = "cell_type")
 cols_use <- c("nCount_sf", "nFeature_sf", "nCount_uf", "nFeature_uf")
 VlnPlot(seu, cols_use, pt.size = 0.1, ncol = 1, group.by = "cell_type")
@@ -294,7 +311,7 @@ seu <- RunUMAP(seu, dims = 1:50, umap.method = "uwot")
 DimPlot(seu, reduction = "umap",
         group.by = "cell_type", pt.size = 0.5, label = TRUE, repel = TRUE) +
   scale_color_brewer(type = "qual", palette = "Set2")
-seu <- FindNeighbors(seu, verbose = FALSE) %>% 
+seu <- FindNeighbors(seu, verbose = FALSE) %>%
   FindClusters(resolution = 1, verbose = FALSE) # Louvain
 DimPlot(seu, pt.size = 0.5, reduction = "umap", label = TRUE)
 
@@ -308,8 +325,8 @@ cell_pal <- function(cell_cats, pal_fun) {
 }
 label_clusters <- function(labels, coords, ...) {
   df <- tibble(label = labels, x = coords[,1], y = coords[,2])
-  df <- df %>% 
-    group_by(label) %>% 
+  df <- df %>%
+    group_by(label) %>%
     summarize(x = median(x), y = median(y))
   text(df$x, df$y, df$label, ...)
 }
@@ -331,7 +348,7 @@ show.velocity.on.embedding.cor(emb = Embeddings(seu, "umap"),
                                n.cores = 50, show.grid.flow = TRUE,
                                grid.n = 50, cell.colors = cell_colors_clust,
                                cex = 0.5, cell.border.alpha = 0,
-                               arrow.scale = 2, arrow.lwd = 0.6, 
+                               arrow.scale = 2, arrow.lwd = 0.6,
                                cc = cc_umap$cc,
                                xlab = "UMAP1", ylab = "UMAP2")
 label_clusters(seu$seurat_clusters, Embeddings(seu, "umap"), font = 2, cex = 1.2)
@@ -346,21 +363,10 @@ gene.relative.velocity.estimates(GetAssayData(seu, slot = "data", assay = "splic
                                  cell.colors = cell_colors)
 ```
 
-
-
 ## 参考链接
+
 [RNA velocity of single cell](https://www.nature.com/articles/s41586-018-0414-6)
 
 [velocyto](http://velocyto.org/)
 
 [velocyto.py](http://velocyto.org/velocyto.py/index.html)
-
-
-
-
-
-
-
-
-
-
