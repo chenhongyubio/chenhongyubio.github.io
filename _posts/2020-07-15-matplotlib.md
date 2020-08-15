@@ -426,3 +426,23 @@ plt.colorbar()  # 图例
 1. base, 指定对数的值，默认值为 10，即进行 log10 的转换
 2. subs，设定 minor ticks 的位置，默认值为 None
 3. nonpositive, 对非负值的处理，因为只有正数可以取 log, 如果原始值为负值，此时有两种处理方式，第一种是丢掉这个点，也是默认的处理方式，对应该参数的值为 mask, 在图中不显示这个点，第二种是将这个值调整为最接近的正数，对应该参数的取值为 clip
+
+#### 点线图和阶梯图
+
+在 matplotlib 中，通过 step 函数来实现折线图。<br>
+
+```
+import matplotlib.pyplot as plt
+x = range(20)
+y = range(20)
+plt.step(x, y)
+# where参数用于控制阶梯的样式
+# pre,post,mid：指定折线位置
+```
+
+点线图在 matplotllib 中通过 stem 函数来实现。<br>
+
+```
+plt.stem(x, y)
+# markerfmt, linefmt, basefmt3个参数来控制其外观
+```
