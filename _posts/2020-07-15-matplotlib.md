@@ -446,3 +446,17 @@ plt.step(x, y)
 plt.stem(x, y)
 # markerfmt, linefmt, basefmt3个参数来控制其外观
 ```
+
+#### 数据添加置信区间
+
+在 matplotlib 中， 可以通过 fill_between 系列函数来实现图中的置信区间的展示效果。<br>
+该系列包含了 fill_between 和 fill_betweenx 两个函数，其中，fill_between 函数用于在两个水平曲线之间进行填充，fill_betweenx 用于在两条数值区间之间进行填充, 两个函数的参数完全一致。<br>
+fill_between 函数有 x, y1, y2 这 3 个基本参数，其中通过(x, y1)指定了第一条水平线，（x, y2）指定了第二条水平线，然后在两个水平线之间进行填充。其中，y2 参数是有默认值的，其默认值为 0。<br>
+[为你的数据添加置信区间](https://mp.weixin.qq.com/s/LzVGIh4118JsRdUfMIINNQ)
+
+#### 添加直线的两种方式
+
+在 matplotlib 中, hlines 用于绘制水平线，vlines 用于绘制垂直线，二者的用法相同，都需要 3 个基本参数。<br>
+hlines 和 vlines 系列函数一次可以绘制多条直线，而且可以根据起始和结束坐标，灵活指定直线的跨度。
+axhline 和 axvline 系列函数一次只可以添加一条直线。<br>
+axhine 和 axvline 基于绘图区域百分比的形式添加直线，hlines 和 vlines 函数则基于坐标的方式灵活指定直线的范围.<br>
