@@ -460,3 +460,12 @@ fill_between 函数有 x, y1, y2 这 3 个基本参数，其中通过(x, y1)指�
 hlines 和 vlines 系列函数一次可以绘制多条直线，而且可以根据起始和结束坐标，灵活指定直线的跨度。
 axhline 和 axvline 系列函数一次只可以添加一条直线。<br>
 axhine 和 axvline 基于绘图区域百分比的形式添加直线，hlines 和 vlines 函数则基于坐标的方式灵活指定直线的范围.<br>
+
+#### 绘制双坐标图
+
+在 matplotlib 中存在两种方式来实现双坐标图：
+
+1. secondary_axis 系列函数：secondary_axis,secondary_yaxis
+   第一个参数用于指定第二个坐标轴的位置，双 Y 轴取值为 left/right,双 X 轴取值为 top/bottom，也可取值为 0，1 以及小数
+   第二个参数用于指定第二个坐标轴的 scale，值为长度为 2 的元组
+2. twin 系列函数：twinx 和 twiny
