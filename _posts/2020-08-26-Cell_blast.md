@@ -4,7 +4,7 @@ title: Cell Blast # 标题
 subtitle: Cell blast比对注释分析流程 #副标题
 date: 2020-08-26 # 时间
 author: CHY # 作者
-header-img: img/wallhaven-SC.jpg #这篇文章标题背景图片
+header-img: img/wallhaven-SC.png #这篇文章标题背景图片
 catalog: true # 是否归档
 tags: #标签
   - 单细胞
