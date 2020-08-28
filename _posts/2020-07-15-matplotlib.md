@@ -469,3 +469,59 @@ axhine 和 axvline 基于绘图区域百分比的形式添加直线，hlines 和
    第一个参数用于指定第二个坐标轴的位置，双 Y 轴取值为 left/right,双 X 轴取值为 top/bottom，也可取值为 0，1 以及小数
    第二个参数用于指定第二个坐标轴的 scale，值为长度为 2 的元组
 2. twin 系列函数：twinx 和 twiny
+
+#### 对图标的坐标轴进行调整
+
+针对坐标轴各个元素的个性化调整，matplotlib 存在对应的函数。<br>
+
+##### 标题
+
+1. set_xlabel，设置 x 轴的标题
+2. set_ylabel，设置 y 轴的标题
+3. set_title，设置图片标题
+
+##### 刻度线
+
+1. set_xticks，设置 x 轴的刻度（get_xticks 获取刻度线）
+2. set_yticks，设置 y 轴的刻度（get_yticks 获取刻度线）
+
+##### 刻度线标签
+
+1. set_xticklabels，设置 x 轴刻度线标签（get_xticklabels 获取刻度线标签）
+2. set_yticklabels，设置 y 轴刻度线标签（get_yticklabels 获取刻度线标签）
+
+##### 坐标轴范围
+
+1. set_xlim 或 set_xbound, 设置 x 轴的坐标范围（get_xlim/xbound 获取刻度线范围）
+2. set_ylim 或 set_ybound, 设置 y 轴的坐标范围（get_xlim/xbound 获取刻度线范围）
+
+##### 坐标轴反转(坐标轴逆向显示)
+
+1. invert_xaxis，逆向 x 轴（ax.xaxis_inverted() 检查是否反转）
+2. invert_yaxis，逆向 y 轴（ax.yaxis_inverted() 检查是否反转）
+
+##### 综合性函数
+
+ax.tick_params(direction='in',bottom=False,top=True,labeltop=True,labelbottom=False) <br>
+direction 参数控制刻度线的方向，bottom 和 top 控制对应方向的刻度线是否显示，labelbottom 和 labeltop 控制对应放下的刻度线标签是否显示.<br>
+
+#### 个性化调整坐标轴
+
+matplotlib 中对于坐标轴轴线的调整需要采用 spines 对象来实现。此外还可以使用 set_visiable 方法<br>
+
+```
+ax.spines['top'].set_color(None)
+ax.spines['right'].set_color(None)
+# 图像的上下左右四个边框分别对应spines的top, bottom, left, right4个key的值，将其颜色设置为None,就可以起到隐藏对应边框的作用
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+```
+
+通过 axes 的 spine 属性可以方便的调整坐标轴轴线的属性。<br>
+
+```
+ax.spines['right'].set_color(None)
+ax.spines['top'].set_color(None)
+ax.spines['left'].set_position('center')
+ax.spines['bottom'].set_position('center')
+```
