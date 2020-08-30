@@ -525,3 +525,43 @@ ax.spines['top'].set_color(None)
 ax.spines['left'].set_position('center')
 ax.spines['bottom'].set_position('center')
 ```
+
+#### 实现一页多图
+
+matplotlib 中存在两种方式实现一页多图(拼图)，一是直接指定，二是动态增加。直接指定是在创建 figure 的时候，就直接定义好多个 axes 的排列方式；动态增加则是根据需要在 figure 上添加 axes。
+
+```
+# 直接指定可以通过pyplot子模块的subplots函数来实现
+fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)
+ax1.plot([1,2,3,4])
+ax2.bar(x = [1, 2, 3, 4], height = [4, 2, 3, 1])
+ax3.hist(x = np.random.normal(size=1000), bins=50)
+ax4.scatter(x= np.random.randn(10), y=np.random.randn(10),s=40 * np.arange(10),c=np.random.randn(10))
+plt.show()
+
+# 动态指定是在生成新的axes对象的同时，指定其排列的位置，通过pyplot子模块的subplot函数来实现
+# 前两个数字分别表示布局的行数和列数，第三个数值表示的是索引
+ax1 = plt.subplot(221)
+ax2 = plt.subplot(222)
+ax3 = plt.subplot(223)
+ax4 = plt.subplot(224)
+
+ax1.plot([1,2,3,4])
+ax2.bar(x = [1, 2, 3, 4], height = [4, 2, 3, 1])
+ax3.hist(x = np.random.normal(size=1000), bins=50)
+ax4.scatter(x= np.random.randn(10), y=np.random.randn(10),s=40 * np.arange(10),c=np.random.randn(10))
+plt.show()
+
+# 支持不同axes占据不同区域，通过pyplot子模块的subplot2grid函数来实现
+# 第一个元组表示布局的行数和列数，第二个元组表示axes的数组下标，colspan和rowspan分别指定该axes占据的行数和列数。
+ax1 = plt.subplot2grid((3, 3), (0, 0), colspan=2)
+ax2 = plt.subplot2grid((3, 3), (1, 0), colspan=2, rowspan=2)
+ax3 = plt.subplot2grid((3, 3), (1, 2), rowspan=2)
+ax1.bar(x = [1, 2, 3, 4], height = [4, 2, 3, 1])
+ax2.scatter(x= np.random.randn(10), y=np.random.randn(10),s=40 * np.arange(10),c=np.random.randn(10))
+ax3.hist(x = np.random.normal(size=1000), bins=50)
+plt.show()
+
+# 将figure视为左下角为(0,0), 右上角为(1, 1)的坐标系，通过left等参数分别指定上下左右的坐标，从而设置绘图区域的大小。wspace和hspace参数分别指定分割线的宽度和高度，其数值为每个axes width和height的比例。
+plt.subplots_adjust(left=0.25, right=0.9, bottom=0.1, top=0.9, wspace=0.2, hspace=0.2)
+```
