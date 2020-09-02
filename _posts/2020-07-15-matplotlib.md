@@ -565,3 +565,65 @@ plt.show()
 # 将figure视为左下角为(0,0), 右上角为(1, 1)的坐标系，通过left等参数分别指定上下左右的坐标，从而设置绘图区域的大小。wspace和hspace参数分别指定分割线的宽度和高度，其数值为每个axes width和height的比例。
 plt.subplots_adjust(left=0.25, right=0.9, bottom=0.1, top=0.9, wspace=0.2, hspace=0.2)
 ```
+
+#### 画中画
+
+matplotlib 实现画中画的方式有两种。<br>
+
+```
+# 第一种：通过在原本axes中插入一个新的axes, 来实现画中画的目的
+fig,ax = plt.subplots()
+ax.scatter(x= np.random.randn(10), y=np.random.randn(10),s=40 * np.arange(10),c=np.random.randn(10))
+ax1 = ax.inset_axes([0.6, 0.5, 0.3, 0.45])  # 插入新的axes
+ax1.scatter(x= np.random.randn(10), y=np.random.randn(10),s=40 * np.arange(10),c=np.random.randn(10))
+plt.show()
+
+# 第二种：对图中的局部区域进行缩放，属于画中画的一种特殊情况
+# indicate_inset_zoom
+fig,ax = plt.subplots()
+seed = 123456
+np.random.seed(seed)
+ax.scatter(x= np.random.randn(10), y=np.random.randn(10),s=40 * np.arange(10),c=np.random.randn(10))
+ax1 = ax.inset_axes([0.6, 0.5, 0.32, 0.45])
+np.random.seed(seed)
+ax1.scatter(x= np.random.randn(10), y=np.random.randn(10),s=40 * np.arange(10),c=np.random.randn(10))
+ax1.set_xlim(-1.5, -0.8)
+ax1.set_ylim(-0.8, -0.3)
+ax.indicate_inset_zoom(ax1)
+plt.show()
+```
+
+#### 设置不同主题
+
+主题就是指对背景色，坐标轴，标题等元素进行设定。在 matplotlib 中通过 matplotlib.style 模块进行定义。
+
+```
+# 查看所有主题
+plt.style.available
+
+# 基本用法
+import numpy as np
+import matplotlib.pyplot as plt
+plt.style.use('dark_background')
+plt.plot(np.sin(np.linspace(0, 2 * np.pi)), 'r-o')
+plt.show()
+
+# 查看主题的具体定义
+import matplotlib
+import matplotlib.style
+print(matplotlib.style.library['dark_background'])
+
+# 主题中定义修改--rcParams字典实现
+import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+plt.style.use('ggplot')
+mpl.rcParams['xtick.color'] = 'red'
+mpl.rcParams['ytick.color'] = 'blue'
+plt.plot(np.sin(np.linspace(0, 2 * np.pi)), 'r-o')
+plt.show()
+
+# 自定义主题
+# 进入matplotlib安装路径下的stylelib文件夹
+# 构建自己的主题文件即可
+```
