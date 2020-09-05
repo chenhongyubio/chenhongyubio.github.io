@@ -627,3 +627,46 @@ plt.show()
 # 进入matplotlib安装路径下的stylelib文件夹
 # 构建自己的主题文件即可
 ```
+
+#### 通过 cycler 实现属性的自动映射
+
+这里提到的属性映与 R 语言 ggplot 中的概念其实是一致的。<br>
+
+```
+import matplotlib.pyplot as plt
+import numpy as np
+x = np.linspace(0, 3 * np.pi, 50)
+offsets = np.linspace(0, 2 * np.pi, 4, endpoint=False)
+for i in range(6):
+     y = np.sin(x) + i
+     plt.plot(x, y)
+plt.show()
+
+matplotlib.rcParams['axes.prop_cycle']  # axes.prop_cycle属性设置颜色的自动映射，超出数量时会自动循环
+```
+
+```
+# 通过cyler模块，可以自定义这样的属性循环
+from cycler import cycler
+custom_cycler = cycler(color=['c', 'm', 'y', 'k'])
+fig, ax = plt.subplots()
+ax.set_prop_cycle(custom_cycler)   # set_prop_cycle将该颜色循环添加到特定的axes对象上
+x = np.linspace(0, 3 * np.pi, 50)
+offsets = np.linspace(0, 2 * np.pi, 4, endpoint=False)
+for i in range(6):
+ y = np.sin(x) + i
+ ax.plot(x, y)
+plt.show()
+
+# 该循环可以定义的属性很多，颜色，线条宽度，线条样式等常用属性都可以进行定义，而且不同的循环还可以进行叠加
+from cycler import cycler
+custom_cycler = cycler(cycler(color=['c', 'm', 'y']) + cycler(linestyle=['-', '--', ':']))
+fig, ax = plt.subplots()
+ax.set_prop_cycle(custom_cycler)
+x = np.linspace(0, 3 * np.pi, 50)
+offsets = np.linspace(0, 2 * np.pi, 4, endpoint=False)
+for i in range(6):
+... y = np.sin(x) + i
+... ax.plot(x, y)
+plt.show()
+```
