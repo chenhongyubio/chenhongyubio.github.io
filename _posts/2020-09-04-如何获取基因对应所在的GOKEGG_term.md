@@ -4,7 +4,7 @@ title: GO_KEGG信息获取 # 标题
 subtitle: 基因ID及GO KEGG信息获取 #副标题
 date: 2020-09-04 # 时间
 author: CHY # 作者
-header-img: wallhaven-mdjw9k.png #这篇文章标题背景图片
+header-img: img/wallhaven-mdjw9k.png #这篇文章标题背景图片
 catalog: true # 是否归档
 tags: #标签
   - 生信分析
