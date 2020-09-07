@@ -670,3 +670,32 @@ for i in range(6):
 ... ax.plot(x, y)
 plt.show()
 ```
+
+#### 添加图例
+
+存在两种添加图例的方式：
+
+1. 在绘制元素时指定 label,然后 legend 自动识别对应的 label 属性，绘制图例
+2. 绘制元素时不需要指定 label, 但是需要获取对应的 artist 对象，然后在 legend 函数中为其指定对应的 label
+
+```
+# 第一种方法
+>>> x = np.linspace(0, 2 * np.pi, 50)
+>>> plt.plot(x, np.sin(x), label='sin')
+>>> plt.plot(x, np.cos(x), label='cos')
+>>> plt.legend()
+>>> plt.show()
+`
+# 第二种方法
+>>> x = np.linspace(0, 2 * np.pi, 50)
+>>> line1, = plt.plot(x, np.sin(x))
+>>> line2, = plt.plot(x, np.cos(x))
+>>> plt.legend((line1, line2), ('sin', 'cos'))
+>>> plt.show()
+
+# 位置属性
+plt.legend(['sin'], loc='upper center')    # 字符串设置
+plt.legend(['sin'], loc=(0.65, 0.75))   # 坐标设置
+
+# legend函数存在两种方法，axes.legend 和 figure.legend，默认调用前者
+```
