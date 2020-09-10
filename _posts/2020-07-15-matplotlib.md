@@ -699,3 +699,23 @@ plt.legend(['sin'], loc=(0.65, 0.75))   # 坐标设置
 
 # legend函数存在两种方法，axes.legend 和 figure.legend，默认调用前者
 ```
+
+#### constrained 和 tight layout
+
+constrained 和 tight layout 主要在 matplotlib 中进行图片自动调整，如超出边框显示不全等等。<br>
+
+```
+plt.subplots(constrained_layout=True)
+plt.scatter(x= np.random.randn(10), y=np.random.randn(10),s=40 * np.arange(10),c=np.random.randn(10))
+plt.title('title', fontsize = 60)
+plt.xlabel('xlabel', fontsize = 30)
+plt.ylabel('ylabel', fontsize = 30)
+plt.show()
+
+plt.scatter(x= np.random.randn(10), y=np.random.randn(10),s=40 * np.arange(10),c=np.random.randn(10))
+plt.title('title', fontsize = 60)
+plt.xlabel('xlabel', fontsize = 30)
+plt.ylabel('ylabel', fontsize = 30)
+plt.tight_layout()
+plt.show()
+```
