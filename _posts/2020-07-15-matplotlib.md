@@ -719,3 +719,13 @@ plt.ylabel('ylabel', fontsize = 30)
 plt.tight_layout()
 plt.show()
 ```
+
+#### 用不同的坐标系统对图形元素进行定位
+
+matplotlib 中常用的坐标系统：
+
+1. data，其实就是最常用的 x 轴和 y 轴了，通过指定 xlim 和 ylim 范围内的数值来指定元素的位置，
+2. axes,将 axes 的左下角视为(0, 0), 右上角视为(1,1),从而对元素进行定位
+3. figure, 将 figure 的左下角视为(0, 0), 右上角视为(1,1),从而对元素进行定位
+
+通过 transform 参数，可以显式指定坐标系统。<br>
