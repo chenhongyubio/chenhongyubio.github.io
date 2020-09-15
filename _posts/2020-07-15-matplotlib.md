@@ -729,3 +729,12 @@ matplotlib 中常用的坐标系统：
 3. figure, 将 figure 的左下角视为(0, 0), 右上角视为(1,1),从而对元素进行定位
 
 通过 transform 参数，可以显式指定坐标系统。<br>
+
+#### 三维图绘制
+
+通过 mplot3d 工具可以实现，只需要在 axes 对象中指定 projection 参数为 3d 即可，只需要同时提供 x,y,z 三个坐标轴对应的值即可。<br>
+
+```
+fig = plt.figure()
+ax = plt.axes(projection='3d')
+```
