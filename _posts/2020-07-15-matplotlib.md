@@ -738,3 +738,59 @@ matplotlib 中常用的坐标系统：
 fig = plt.figure()
 ax = plt.axes(projection='3d')
 ```
+
+#### 设置坐标轴刻度的位置和样式
+
+在 matplotlib 中，通过子模块 ticker 可以对坐标轴刻度的位置和样式进行设置。<br>
+
+1.  set_major_locator
+2.  set_minor_locator
+3.  set_major_formatter
+4.  set_minor_formatter
+    多种设置方式<br>
+    locator 形式<br>
+5.  AutoLocator, 默认值，自动对刻度线的位置进行设置
+6.  MaxNLocator, 根据提供的刻度线的最大个数，自动设置
+7.  IndexLocator, 根据起始位置和间隔来设置刻度线
+8.  MultipleLocator, 根据指定的间隔来设置刻度线
+9.  FixedLocator, 根据提供的列表元素来设置刻度线
+10. NullLocator,不显示刻度线
+    formatter 形式<br>
+11. PercentFormatter，标签显示成百分比
+12. StrMethodFormatter，根据字符串格式化语法进行格式化
+13. FormatStrFormatter，根据字符串格式化语法进行格式化
+14. MultipleLocator, 根据指定的间隔来设置刻度线
+15. NullFormatter，不显示标签
+
+#### 图中添加多边形
+
+在 matplotlib 中有一个子模块 patches, 提供了绘制各种多边形的功能 <br>
+
+```
+# 圆形
+patch = patches.Circle((0.5, 0.5), radius=0.2, transform=ax.transAxes)
+# 椭圆
+patch = patches.Ellipse((0.5, 0.5), width=0.4, height= 0.2)
+# 箭头
+patch = patches.Arrow(x=0.2, y=0.2, dx=0.5, dy=0.6)
+# 矩形
+patch = patches.Rectangle(xy=(0.2,0.2), width=0.5, height=0.4)
+# 多边形
+patch = patches.Polygon(np.array(([0.2, 0.2], [0.4, 0.6], [0.6, 0.2])))
+# 连线
+patch = patches.ConnectionPatch(xyA=(0.2, 0.2), xyB=(0.8, 0.8), coordsA=ax.transData, coordsB=ax.transData)
+# 曲线
+style = patches.ConnectionStyle.Arc3(rad=0.2)
+patch = patches.ConnectionPatch(xyA=(0.2, 0.2), xyB=(0.8, 0.8), coordsA=ax.transData, coordsB=ax.transData,connectionstyle=style)
+# 自定义多边形
+# 通过子模块path可以自定义形状
+from matplotlib.path import Path
+fig, ax = plt.subplots(figsize=(4,4))
+verts = [(0.2, 0.2),(0.2, 0.6),(0.5,0.8),(0.8,0.6),(0.8,0.2)]
+codes = [Path.MOVETO, Path.LINETO, Path.LINETO, Path.LINETO, Path.LINETO]
+path = Path(verts, codes)
+patch = patches.PathPatch(path)
+ax.add_artist(patch)
+plt.show()
+# 对于单个多边形而言，通过add_artist方法添加到axes上，如果需要绘制多个多边形，可以通过绘制PatchCollection来一次性添加多个
+```
