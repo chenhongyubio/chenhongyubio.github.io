@@ -794,3 +794,46 @@ ax.add_artist(patch)
 plt.show()
 # 对于单个多边形而言，通过add_artist方法添加到axes上，如果需要绘制多个多边形，可以通过绘制PatchCollection来一次性添加多个
 ```
+
+#### 极坐标系
+
+```
+import numpy as np
+import matplotlib.pyplot as plt
+r = np.arange(0, 2, 0.01)
+theta = 2 * np.pi * r
+ax = plt.subplot(111, projection='polar')   # projection参数定义极坐标系
+ax.plot(theta, r)
+ax.set_rticks([0.5, 1, 1.5, 2])
+plt.show()
+```
+
+在 matplotlib 的极坐标系中，确定点的坐标需要两个值，第一个值是点的弧度值，第二个是半径，简单理解，弧度看做是笛卡尔坐标系中的 x 轴坐标，半径看做是笛卡尔坐标系中的 y 轴坐标。<br>
+
+```
+vals = [123, 124, 102, 111, 100, 121, 96, 107, 111, 116, 101, 83, 91, 123, 109, 130, 125, 87, 91, 99, 115, 109, 123, 111]
+theta = np.linspace(0, 2 * np.pi, len(vals))
+ax = plt.subplot(111, projection='polar')
+ax.bar(theta, vals, width = 2 * np.pi / len(vals))
+ax.tick_params(labelleft=False)
+plt.show()
+
+# 显示部分区域
+vals = [123, 124, 102, 111, 100, 121, 96, 107, 111, 116, 101, 83, 91, 123, 109, 130, 125, 87, 91, 99, 115, 109, 123, 111]
+theta = np.linspace(0, 2 * np.pi, len(vals))
+ax = plt.subplot(111, projection='polar')
+ax.bar(theta, vals, width = 2 * np.pi / len(vals))
+ax.tick_params(labelleft=False)
+ax.set_thetamin(45)
+ax.set_thetamax(135)
+plt.show()
+
+# 设置半径范围
+vals = [123, 124, 102, 111, 100, 121, 96, 107, 111, 116, 101, 83, 91, 123, 109, 130, 125, 87, 91, 99, 115, 109, 123, 111]
+theta = np.linspace(0, 2 * np.pi, len(vals))
+ax = plt.subplot(111, projection='polar')
+ax.bar(theta, vals, width = 2 * np.pi / len(vals))
+ax.tick_params(labelleft=False)
+ax.set_rorigin(-20)
+plt.show()
+```
