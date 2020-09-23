@@ -837,3 +837,35 @@ ax.tick_params(labelleft=False)
 ax.set_rorigin(-20)
 plt.show()
 ```
+
+#### 多图排版技巧
+
+```
+# 在matplotlib中，可以通过ImageGrid方法来调节多图的排版问题
+# single只显示一个图例
+fig = plt.figure()
+grid = ImageGrid(fig, rect=(0.05,0.05,0.8,0.8),nrows_ncols=(1, 2), axes_pad=0.25, label_mode="1", cbar_location="right", cbar_mode="single")
+for ax in grid:
+... im = ax.imshow(data)
+grid.cbar_axes[0].colorbar(im)
+plt.show()
+
+# each每幅图对应自己的图例
+fig = plt.figure()
+grid = ImageGrid(fig, rect=(0.05,0.05,0.8,0.8),nrows_ncols=(1, 2), axes_pad=0.5, label_mode="1", cbar_location="right", cbar_mode="each", cbar_pad="3%")
+for ax, cax in zip(grid, grid.cbar_axes):
+    im = ax.imshow(data)
+   cax.colorbar(im)
+plt.show()
+
+# 图片大小不一致设置
+data1 = np.random.rand(50).reshape(5, 10)
+data2 = np.random.rand(30).reshape(5, 6)
+data3 = np.random.rand(20).reshape(5, 4)
+fig = plt.figure()
+grid = ImageGrid(fig, rect=(0.05,0.05,0.8,0.8),nrows_ncols=(1, 3), axes_pad=0.25, label_mode="1", cbar_location="right", cbar_mode="single", cbar_pad="3%")
+for ax, data in zip(grid, [data1, data2, data3]):
+   im = ax.imshow(data)
+grid.cbar_axes[0].colorbar(im)
+plt.show()
+```
