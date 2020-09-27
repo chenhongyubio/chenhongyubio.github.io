@@ -869,3 +869,39 @@ for ax, data in zip(grid, [data1, data2, data3]):
 grid.cbar_axes[0].colorbar(im)
 plt.show()
 ```
+
+#### seaborn 更高效的统计图表制作工具
+
+seaborn 是针对数据的统计学描述，整合了一系列相关的可视化功能。<br>
+
+1. relplot, 描述数据点之前的关联，可视化形式是散点图和折线图
+2. displot, 描述数据点的分布，可视化形式包括直方图，密度曲线等
+3. catplot, 描述分类变量的分布，可视化形式包括箱体图，柱状图，小提琴图等
+
+```
+import seaborn as sns
+sns.relplot(data=df, x='total_bill', y='tip', kind='scatter')
+# 使用relplot函数来可视化x和y变量的关系，kind参数的值为scatter
+sns.scatterplot(data=df, x='total_bill', y='tip')
+```
+
+##### 属性映射
+
+```
+# hue参数用于映射颜色属性，style颜色用于映射形状属性，size参数用于映射点的大小属性
+sns.relplot(data=df, x='total_bill', y='tip', hue='day', style='day')
+```
+
+##### 分面
+
+```
+# 通过row和col参数将数据框的列映射为不同的分面,仅在大类函数中适用
+sns.relplot(data=df, x='total_bill', y='tip', hue='day', col='time')
+```
+
+```
+# pairplot
+sns.pairplot(df)
+# jointplot
+sns.jointplot(data=df, x='total_bill', y='tip', hue='day')
+```
