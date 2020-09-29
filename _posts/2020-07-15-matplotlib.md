@@ -905,3 +905,36 @@ sns.pairplot(df)
 # jointplot
 sns.jointplot(data=df, x='total_bill', y='tip', hue='day')
 ```
+
+#### seaborn 之折线图和散点图关联
+
+在 seaborn 中，satterplot 绘制散点图，lineplot 绘制折线图。<br>
+
+1. hue, 用于映射颜色
+2. size, 于映射线条的宽度或者点的大小
+3. style, 用于映射线条的样式或者点的样式
+
+```
+# 散点图绘制
+df = pd.read_csv('tips.csv')
+sns.scatterplot(data=df, x="total_bill", y="tip", hue="day", style="time", size="size")
+plt.show()
+
+# 折线图绘制
+sns.lineplot(data=df, x="total_bill", y="tip", hue="day", style="time", size='size')
+
+# 属性映射顺序
+# 1. hue_order（针对离散变量）
+# 2. size_order
+# 3. style_order
+sns.scatterplot(data=df, x="total_bill", y="tip", hue="day", style="time", size='size', hue_order=['Fri','Thur','Sat','Sun'])
+
+# norm系列函数用于映射连续变量的映射过程
+sns.scatterplot(data=df, x="total_bill", y="tip", hue="size", style="time", hue_norm=(2, 5))
+
+# 属性组合
+sns.scatterplot(data=df, x="total_bill", y="tip", hue="day", style="day")
+
+# 分面
+sns.relplot(data=df, x="total_bill", y="tip", hue="day", col="time")
+```
