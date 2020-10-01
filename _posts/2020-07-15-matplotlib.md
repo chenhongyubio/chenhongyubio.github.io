@@ -938,3 +938,10 @@ sns.scatterplot(data=df, x="total_bill", y="tip", hue="day", style="day")
 # 分面
 sns.relplot(data=df, x="total_bill", y="tip", hue="day", col="time")
 ```
+
+#### seaborn 数据总体分布可视化
+
+1. histplot. 通过直方图来展示数据分布
+2. kdeplot, 通过密度分布图来展示数据分布
+3. ecdfplot. 通过累积分布曲线来展示数据分布
+4. rugplot. 通过 x 轴和 y 轴的边际分布来展示数据分布
