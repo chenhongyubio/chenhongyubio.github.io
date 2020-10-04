@@ -945,3 +945,16 @@ sns.relplot(data=df, x="total_bill", y="tip", hue="day", col="time")
 2. kdeplot, 通过密度分布图来展示数据分布
 3. ecdfplot. 通过累积分布曲线来展示数据分布
 4. rugplot. 通过 x 轴和 y 轴的边际分布来展示数据分布
+
+#### seaborn 分类变量的汇总展示
+
+根据分类变量对样本进行分组，然后展示每一组的分布，适合多组数据的横向比较。<br>
+
+1. stripplot,
+2. swarmplot
+3. boxplot
+4. violinplot
+5. boxenplot
+6. pointplot
+7. barplot
+8. countplot
