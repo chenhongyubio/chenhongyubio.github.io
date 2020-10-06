@@ -78,3 +78,5 @@ chrom_based=False,tsb_stat=False,seqInfo=False,cushion=100)
 
 # 在当前工作路径下会产生三个文件夹：input, output, logs
 ```
+
+[使用MuSE软件找somatic mutation](https://mp.weixin.qq.com/s/SvrW1e6svcqGDhGRhJUnCw)<br>
