@@ -958,3 +958,28 @@ sns.relplot(data=df, x="total_bill", y="tip", hue="day", col="time")
 6. pointplot
 7. barplot
 8. countplot
+
+
+#### seaborn可视化数据库中多个列元素
+seaborn中pairplot函数用于快速展示列元素分布和相互关系的函数。该函数会自动选取数据框中值为数字的列元素，其中对角线用于展示各个列元素的分布情况，剩余空间展示每两个列元素之间的关系。<br>
+```
+df = pd.read_csv("text.csv")
+sns.pairplot(df)
+plt.show()
+
+# 通过corner参数，可以控制只显示图形的一半
+sns.pairplot(df,corner=True)
+plt.snow()
+
+# kind和diag_kind用于指定上下三角区域和对角线区域的可视化方式
+sns.pairplot(df, kind='reg', diag_kind='kde')
+plt.show()
+
+# x_vars和y_vars指定列
+sns.pairplot(df, x_vars=['bill_length_mm', 'bill_depth_mm'], y_vars=['bill_length_mm', 'bill_depth_mm'])
+plt.show()
+
+# hue用于分组变量的颜色映射
+sns.pairplot(df,hue="species")
+plt.show()
+```
