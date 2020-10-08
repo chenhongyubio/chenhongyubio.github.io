@@ -959,9 +959,10 @@ sns.relplot(data=df, x="total_bill", y="tip", hue="day", col="time")
 7. barplot
 8. countplot
 
+#### seaborn 可视化数据库中多个列元素
 
-#### seaborn可视化数据库中多个列元素
-seaborn中pairplot函数用于快速展示列元素分布和相互关系的函数。该函数会自动选取数据框中值为数字的列元素，其中对角线用于展示各个列元素的分布情况，剩余空间展示每两个列元素之间的关系。<br>
+seaborn 中 pairplot 函数用于快速展示列元素分布和相互关系的函数。该函数会自动选取数据框中值为数字的列元素，其中对角线用于展示各个列元素的分布情况，剩余空间展示每两个列元素之间的关系。<br>
+
 ```
 df = pd.read_csv("text.csv")
 sns.pairplot(df)
@@ -981,5 +982,27 @@ plt.show()
 
 # hue用于分组变量的颜色映射
 sns.pairplot(df,hue="species")
+plt.show()
+```
+
+#### seaborn 绘制热图
+
+```
+# heatmap绘制普通热图
+sns.heatmap(data)
+plt.show()
+sns.heatmap(data, linewidth=1)
+plt.show()
+sns.heatmap(data, linewidth=1, annot=True)
+plt.show()
+
+# clustermap绘制带聚类数的热图
+sns.clustermap(df)
+plt.show()
+sns.clustermap(df, standard_scale=0)  # 按行进行数据标准化
+plt.show()
+sns.clustermap(df, z_score=0)  # 按行zscore标准化
+plt.show()
+sns.clustermap(df, col_colors=['r','g','b','b','b'])  # 对行标签和列标签进行注释
 plt.show()
 ```
