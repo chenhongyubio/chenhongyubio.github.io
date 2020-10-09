@@ -1006,3 +1006,19 @@ plt.show()
 sns.clustermap(df, col_colors=['r','g','b','b','b'])  # 对行标签和列标签进行注释
 plt.show()
 ```
+
+#### seaborn中jointplot探究两组变量分布及关系
+```
+# 同时绘制两组变量的散点图以及各自对应的直方图
+sns.jointplot(data=df, x='bill_length_mm', y='bill_depth_mm')
+plt.show()
+
+# kind参数调整可视化形式
+# reg/hist/kde/hex/resid
+# plot_joint函数用于指定x和y相互关系的可视化形式，plot_marginals函数用于指定x和y变量各自分布的可视化形式。结合jointplot一起使用时，是在已有可视化元素的基础上进行添加，可以通过zorder等参数指定优先级。
+
+# JointGrid灵活接口
+g = sns.JointGrid(data=df, x='bill_length_mm', y='bill_depth_mm')
+g.plot(sns.scatterplot, sns.histplot)
+plt.show()
+```
