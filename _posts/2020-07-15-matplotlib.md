@@ -1022,3 +1022,23 @@ g = sns.JointGrid(data=df, x='bill_length_mm', y='bill_depth_mm')
 g.plot(sns.scatterplot, sns.histplot)
 plt.show()
 ```
+
+#### seaborn绘图风格的设置
+```
+# context
+sns.plotting_context()    # 查看context影响的具体元素
+sns.set_context('notebook')     # 设置对应的context值
+
+# style
+sns.axes_style("white")     # 查看对应的元素属性
+with sns.axes_style('white'):
+...     sns.scatterplot(data=df, x='total_bill', y='tip')
+plt.show()
+sns.set_style('white', rc={'figure.facecolor':'black'})   # 修改部分属性的值
+
+# theme
+#  一次性设置context, style, palette等属性
+sns.set_theme(context='notebook', style='darkgrid', palette='deep', font='sans-serif')
+sns.set(context='notebook', style='darkgrid', palette='deep', font='sans-serif')   # set为set_theme别名
+
+```
