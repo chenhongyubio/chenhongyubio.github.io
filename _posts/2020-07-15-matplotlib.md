@@ -1042,3 +1042,50 @@ sns.set_theme(context='notebook', style='darkgrid', palette='deep', font='sans-s
 sns.set(context='notebook', style='darkgrid', palette='deep', font='sans-serif')   # set为set_theme别名
 
 ```
+
+#### seaborn颜色设置
+```
+# 通过color_palette函数来设置颜色
+sns.color_palette()
+
+# 存在多种颜色梯度
+palettes = ['deep', 'muted', 'pastel', 'bright', 'dark', 'colorblind']
+ax.pie(x, colors = sns.color_palette(palette))
+
+# 借用matplotlib颜色列表
+plt.pie(x, colors=sns.color_palette('Paired'))
+
+# 通过色相、饱和度和明度来设置颜色
+# 通过husl_palette和hsl_palette两个子函数来实现
+fig, (ax1, ax2) = plt.subplots(1, 2)
+ax1.pie(x, colors=sns.color_palette('husl', 10))
+ax1.text(0.5, 1, 'husl', transform=ax1.transAxes, ha='center')
+ax2.pie(x, colors=sns.color_palette('hls', 10))
+ax2.text(0.5, 1, 'hls', transform=ax2.transAxes, ha='center')
+plt.show()
+
+# 通过子函数cubehelix_palette来实现
+plt.pie(x, colors=sns.color_palette('ch:')) # 通过前缀ch:来标识对应的参数
+plt.show()
+
+# light, dark and blend  palette
+fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
+ax1.pie(x, colors=sns.color_palette('light:blue'))
+ax1.text(0.5, 1, 'light_palette', transform=ax1.transAxes, ha='center')
+ax2.pie(x, colors=sns.color_palette('dark:blue'))
+ax2.text(0.5, 1, 'dark_palette', transform=ax2.transAxes, ha='center')
+ax3.pie(x, colors=sns.color_palette('blend:red,blue'))
+ax3.text(0.5, 1, 'blend_palette', transform=ax3.transAxes, ha='center')
+plt.show()
+
+# 自定义颜色
+plt.pie(x, colors=sns.color_palette(['xkcd:green','xkcd:blue','xkcd:red', 'xkcd:brown', 'xkcd:pink', 'xkcd:purple'])）
+plt.show()
+
+# 绘制热图渐变色
+# rocket
+# flare
+# mako
+# crest
+sns.heatmap(data, cmap='rocket')
+```
