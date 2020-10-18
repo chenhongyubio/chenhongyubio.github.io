@@ -106,3 +106,4 @@ ACC = (TP + TN) / (TP + FP + FN + TN)
 **Use of continuous integration**
 
 [机器学习模型评估指标总结！](https://mp.weixin.qq.com/s/FLMbkU70EZj5f4ISjDDIVw)<br>
+[一个自动计算各种检验指标的工具](https://mp.weixin.qq.com/s/sjTSBsQXaPkqD2P3R1-t9Q)<br>
