@@ -18,6 +18,7 @@ Orchestrating Single-Cell Analysis with Bioconductor教程主要分为三部分�
 #### Data Infrastructure数据框架
 SingleCellExperiment对象数据结构：
 1. 构建基础的SingleCellExperiment对象结构，首先需要用表达矩阵填充**assays slot**；
+   
 ```
 # 表达矩阵在R中必须为matrix
 sce <- SingleCellExperiment(assays = list(counts = counts_matrix))  
@@ -39,7 +40,9 @@ counts_100 <- counts(sce) + 100
 assay(sce, "counts_100") <- counts_100 # assign a new entry to assays slot
 assays(sce)
 ```
+
 2. 细胞Metadata存放在colData slot，输入为data.frame
+
 ```
 # 添加cell metadata到colData slot
 sce <- SingleCellExperiment(assays = list(counts = counts_matrix), colData = cell_metadata)
@@ -59,6 +62,7 @@ sce[, sce$batch == 1]
 ```
 
 3. 基因Metadata存放在rowData中，输入为data.frame
+
 ```
 # 获取及添加rowMetadata
 rowRanges(sce)
@@ -76,6 +80,7 @@ sce[c(1, 4), ]
 ```
 
 4. 其余元数据存放在metadata slot，输入为list
+
 ```
 my_genes <- c("gene_1", "gene_5")
 metadata(sce) <- list(favorite_genes = my_genes)
@@ -88,6 +93,8 @@ metadata(sce)
 ```
 
 5. 降维数据存放在reducedDims slot中，包含一系列数字矩阵构成的list；其中矩阵行为细胞，列为维度
+   
+
 ```
 ce <- scater::logNormCounts(sce)
 sce <- scater::runPCA(sce)
@@ -103,6 +110,7 @@ reducedDims(sce) # Now stored in the object.
 ```
 
 6. 类似于spike-in的数据可以先构建SummarizedExperiment对象，然后再存储在SingleCellExperiment对象中
+
 ```
 spike_counts <- cbind(cell_1 = rpois(5, 10), 
     cell_2 = rpois(5, 10), 
@@ -115,6 +123,7 @@ altExps(sce)
 ```
 
 7. 每个细胞对应的sizeFactors()也可存放
+
 ```
 sce <- scran::computeSumFactors(sce)
 sizeFactors(sce)
@@ -127,6 +136,8 @@ sizeFactors(sce)
 1. 实验设计--测序方法选择、测序细胞数
 2. 获取表达矩阵--CellRanger(10X)、alevin(Pseudo-alignment)、scPipe(highly multiplexed protocols)、scruff(CEL-seq)
 3. 数据预处理--去除低质量细胞、normalized、挑选高变异细胞、降维、聚类
+
+
 ```
 library(scRNAseq)
 sce <- MacoskoRetinaData()
@@ -163,6 +174,8 @@ plotUMAP(sce, colour_by="label")
 低质量细胞的特征在于：1. low total counts; 2. few expressed genes; 3. high mitochondrial; 4. high spike-in proportions<br>
 可能影响后续的结果：1. 形成了自己独特的簇，使对结果的解释变得复杂。2. 在方差估计或主成分分析过程中扭曲了异质性的特征；3. 包含的基因似乎由于主动缩放以针对小文库大小进行标准化而被强烈“上调”。<br>
 鉴定低质量细胞的指标：1. library size 2. 表达基因数 3. spike-in 基因所占比例 4. 线粒体基因所占比例<br>
+
+
 ```
 # Retrieving the mitochondrial transcripts using genomic locations included in
 # the row-level annotation for the SingleCellExperiment.
@@ -188,6 +201,8 @@ colnames(colData(sce.416b))
 
 **如何鉴定低质量细胞？**<br>
 1. 采用固定的阈值
+
+
 ```
 qc.lib <- df$sum < 1e5
 qc.nexprs <- df$detected < 5e3
@@ -201,6 +216,8 @@ DataFrame(LibSize=sum(qc.lib), NExprs=sum(qc.nexprs),
 ```
 2. 采用自适应的阈值
    2.1 鉴定outliers，如采用3个MADs
+
+
 ```
 qc.lib2 <- isOutlier(df$sum, log=TRUE, type="lower")
 qc.nexprs2 <- isOutlier(df$detected, log=TRUE, type="lower")
@@ -216,6 +233,8 @@ colSums(as.matrix(reasons))
 
 3. Outlier鉴定的假设是：大部分细胞都是高质量的；QC指标是独立于细胞生物信息外的
 4. 当存在多个批次时，如果每个批次单独分开，则可以使用针对单独batch使用isOutlier()；当多个批次整合后，需要添加batch=参数，综合多个batch的阈值来进行筛选
+
+
 ```
 library(scRNAseq)
 sce.grun <- GrunPancreasData()
@@ -239,6 +258,8 @@ gridExtra::grid.arrange(with.blocking, without.blocking, ncol=2)
 ```
 
 5. 高维空间鉴定(多个QC指标，存在一定风险)
+
+
 ```
 stats <- cbind(log10(df$sum), log10(df$detected),
     df$subsets_Mito_percent, df$altexps_ERCC_percent)
@@ -250,6 +271,8 @@ summary(multi.outlier)
 ```
 
 6. 指标相关性揭示数据质量
+
+
 ```
 colData(sce.416b) <- cbind(colData(sce.416b), df)
 sce.416b$block <- factor(sce.416b$block)
@@ -286,6 +309,8 @@ plotColData(sce.zeisel, x="altexps_ERCC_percent", y="subsets_Mt_percent",
 ```
 
 7. 低质量细胞过滤
+
+
 ```
 filtered <- sce.416b[,!reasons$discard]
 
@@ -304,6 +329,8 @@ points(abundance[is.mito], logFC[is.mito], col="dodgerblue", pch=16)
 ```
 
 8. 仅标注低质量细胞，但在后续分析中不去除
+
+
 ```
 marked <- sce.416b
 marked$discard <- batch.reasons$discard
@@ -320,6 +347,8 @@ QC比较担心的问题在于将一些生物现象也磨灭掉，但如果不去
    基于两个细胞间不存在差异不平衡的现象，但在单细胞数据中不是很常见；在后续的聚类及差异分析中够用了。
 2. Normalization by deconvolution
    与DESeq2-estimateSizeFactorsFromMatrix 和 edgeR-calcNormFactors函数类似，假设大部分基因都不是差异基因，单细胞数据采用Pool-based size factors进行Normalization
+
+
 ```
 library(scran)
 set.seed(100)
@@ -328,7 +357,8 @@ table(clust.zeisel)
 deconv.sf.zeisel <- calculateSumFactors(sce.zeisel, cluster=clust.zeisel)
 summary(deconv.sf.zeisel)
 ```
-1. Normalization by spike-ins
+3. Normalization by spike-ins
+
 ```
 library(scRNAseq)
 sce.richard <- RichardTCellData()
@@ -339,6 +369,7 @@ summary(sizeFactors(sce.richard))
 ```
 
 4. size factors应用
+
 ```
 set.seed(100)
 clust.zeisel <- quickCluster(sce.zeisel) 
@@ -358,6 +389,7 @@ assayNames(sce.zeisel)
    2. 通过p-values选择
    3. 保留趋势线以上所有基因 -- 对于鉴定rare cell较为友好
    4. 选择感兴趣的先验基因
+
 ```
 # 基因的差异更多由丰度造成，少部分由潜在生物差异造成
 # 变异选择
@@ -422,7 +454,7 @@ Perform the PCA on the log-normalized expression values.<br>
 2. 保留那些代表差异达到特定阈值的PC，如解释80%差异的PC,也可以计算生物差异所占的比例
 3. Based on population structure -- 类群与PC对应
 4. Using random matrix theory
-5. Count-based dimensionality reduction
+
 ```
 # Elbow plot识别PC -- TOP PC应该比其余PC解释的差异性大得多
 percent.var <- attr(reducedDim(sce.zeisel), "percentVar")
@@ -481,8 +513,404 @@ gv.choice <- PCAtools::chooseGavishDonoho(
     noise=median(dec.zeisel[top.hvgs,"tech"]))
 gv.choice
 ```
+5. Count-based dimensionality reduction
+除运行在log-normalized expression values的PCA降维分析外，还存在直接利用count数据的CA算法。<br>
+
 ```
-# 
+# TODO: move to scRNAseq.
+# corral package to compute CA factors
+library(BiocFileCache)
+bfc <- BiocFileCache(ask=FALSE)
+qcdata <- bfcrpath(bfc, "https://github.com/LuyiTian/CellBench_data/blob/master/data/mRNAmix_qc.RData?raw=true")
+
+env <- new.env()
+load(qcdata, envir=env)
+sce.8qc <- env$sce8_qc
+sce.8qc$mix <- factor(sce.8qc$mix)
+
+# Choosing some HVGs for PCA:
+sce.8qc <- logNormCounts(sce.8qc)
+dec.8qc <- modelGeneVar(sce.8qc)
+hvgs.8qc <- getTopHVGs(dec.8qc, n=1000)
+sce.8qc <- runPCA(sce.8qc, subset_row=hvgs.8qc)
+
+# By comparison, corral operates on the raw counts:
+sce.8qc <- corral_sce(sce.8qc, subset_row=hvgs.8qc, col.w=sizeFactors(sce.8qc))
+
+gridExtra::grid.arrange(
+    plotPCA(sce.8qc, colour_by="mix") + ggtitle("PCA"),
+    plotReducedDim(sce.8qc, "corral", colour_by="mix") + ggtitle("corral"),
+    ncol=2
+)
+```
+```
+plotReducedDim(sce.zeisel, dimred="PCA", colour_by="level1class")
+plotReducedDim(sce.zeisel, dimred="PCA", ncomponents=4,
+    colour_by="level1class")
+
+# TSNE
+set.seed(00101001101)
+# runTSNE() stores the t-SNE coordinates in the reducedDims
+# for re-use across multiple plotReducedDim() calls.
+sce.zeisel <- runTSNE(sce.zeisel, dimred="PCA")
+plotReducedDim(sce.zeisel, dimred="TSNE", colour_by="level1class")
+
+# UMAP
+set.seed(1100101001)
+sce.zeisel <- runUMAP(sce.zeisel, dimred="PCA")
+plotReducedDim(sce.zeisel, dimred="UMAP", colour_by="level1class")
+```
+
+#### Clustering
+1. Graph-based clustering
+首先构建图谱，其中点代表细胞，细胞与其临近的细胞连成边，边表示加权相似性；然后鉴定社区communities
+需要考虑三个问题：
+* How many neighbors are considered when constructing the graph.  K值很重要
+* What scheme is used to weight the edges.
+* Which community detection algorithm is used to define the clusters.
+
+```
+library(scran)
+g <- buildSNNGraph(sce.pbmc, k=10, use.dimred = 'PCA')
+clust <- igraph::cluster_walktrap(g)$membership
+table(clust)
+
+library(bluster)
+clust2 <- clusterRows(reducedDim(sce.pbmc, "PCA"), NNGraphParam())
+table(clust2) # same as above.
+
+# 结果添加会SingleCellExperiment对象
+library(scater)
+colLabels(sce.pbmc) <- factor(clust)
+plotReducedDim(sce.pbmc, "TSNE", colour_by="label")
+
+# 关于edge加权的方法
+g.num <- buildSNNGraph(sce.pbmc, use.dimred="PCA", type="number")
+g.jaccard <- buildSNNGraph(sce.pbmc, use.dimred="PCA", type="jaccard")
+g.none <- buildKNNGraph(sce.pbmc, use.dimred="PCA")
 
 
 ```
+
+2. K-means clustering
+每个细胞分配给距离最近的质心；优势在于运行速度快，算法简单易实现；
+
+```
+# k-means clustering实现
+set.seed(100)
+clust.kmeans <- kmeans(reducedDim(sce.pbmc, "PCA"), centers=10)
+table(clust.kmeans$cluster)
+colLabels(sce.pbmc) <- factor(clust.kmeans$cluster)
+plotReducedDim(sce.pbmc, "TSNE", colour_by="label")
+
+# 关于K值的选择 -- cluster
+library(cluster)
+set.seed(110010101)
+gaps <- clusGap(reducedDim(sce.pbmc, "PCA"), kmeans, K.max=20)
+best.k <- maxSE(gaps$Tab[,"gap"], gaps$Tab[,"SE.sim"])
+best.k
+plot(gaps$Tab[,"gap"], xlab="Number of clusters", ylab="Gap statistic")
+abline(v=best.k, col="red")
+
+# 简单运行 -- bluster
+set.seed(10000)
+sq.clusts <- clusterRows(reducedDim(sce.pbmc, "PCA"), KmeansParam(centers=sqrt))
+nlevels(sq.clusts)
+
+# 评估类群分离效果
+# 类群内部离散效果
+# within-cluster sum of squares (WCSS)
+# root-mean-squared deviation(RMSD) 代表分群中细胞分散效果
+ncells <- tabulate(clust.kmeans2$cluster)
+tab <- data.frame(wcss=clust.kmeans2$withinss, ncells=ncells)
+tab$rms <- sqrt(tab$wcss/tab$ncells)
+tab
+
+# 类群之间离散效果
+# 计算质心之间的距离
+cent.tree <- hclust(dist(clust.kmeans2$centers), "ward.D2")
+plot(cent.tree)
+
+# k-means与graph-based clustering结合
+# 前者用于寻找质心，后者用于聚类
+# Setting the seed due to the randomness of k-means.
+set.seed(0101010)
+kgraph.clusters <- clusterRows(reducedDim(sce.pbmc, "PCA"),
+    TwoStepParam(
+        first=KmeansParam(centers=1000),
+        second=NNGraphParam(k=5)
+    )
+)
+table(kgraph.clusters)
+```
+
+3. Hierarchical clustering
+层次聚类的优势在于：production of the dendrogram；但运行速度慢，只适用于较少细胞数的单细胞数据集
+```
+# 使用top PCs和Ward's method计算细胞距离矩阵
+dist.416b <- dist(reducedDim(sce.416b, "PCA"))
+tree.416b <- hclust(dist.416b, "ward.D2")
+# Making a prettier dendrogram.
+library(dendextend)
+tree.416b$labels <- seq_along(tree.416b$labels)
+dend <- as.dendrogram(tree.416b, hang=0.1)
+
+combined.fac <- paste0(sce.416b$block, ".", 
+    sub(" .*", "", sce.416b$phenotype))
+labels_colors(dend) <- c(
+    `20160113.wild`="blue",
+    `20160113.induced`="red",
+    `20160325.wild`="dodgerblue",
+    `20160325.induced`="salmon"
+)[combined.fac][order.dendrogram(dend)]
+plot(dend)
+
+# 裁减分支用于获取类群--cutree() / dynamicTreeCut
+library(dynamicTreeCut)
+clust.416b <- cutreeDynamic(tree.416b, distM=as.matrix(dist.416b),
+    minClusterSize=10, deepSplit=1)
+labels_colors(dend) <- clust.416b[order.dendrogram(dend)]
+plot(dend)
+colLabels(sce.416b) <- factor(clust.416b)
+plotReducedDim(sce.416b, "TSNE", colour_by="label")
+# 更便捷操作
+clust.416b.again <- clusterRows(reducedDim(sce.416b, "PCA"), 
+    HclustParam(method="ward.D2", cut.dynamic=TRUE, minClusterSize=10, deepSplit=1))
+table(clust.416b.again)
+
+# 评估类群分离效果
+# silhouette width -- 计算细胞与自己类群与其他类群细胞的聚类，然后按照类群计算平均值，然后取最小值
+# 正值越大说明越是一个类群
+sil <- silhouette(clust.416b, dist = dist.416b)
+plot(sil)
+```
+
+4. 类群的比较
+
+```
+# 类群之间的比较
+tab <- table(Walktrap=clust, Louvain=clust.louvain)
+tab <- tab/rowSums(tab)
+pheatmap(tab, color=viridis::viridis(100), cluster_cols=FALSE, cluster_rows=FALSE)
+
+# 不同分辨率比较
+library(clustree)
+combined <- cbind(k.50=clust.50, k.10=clust, k.5=clust.5)
+clustree(combined, prefix="k.", edge_arrow=FALSE)
+```
+
+5. 聚类的稳定性
+scran包可用于评估
+```
+myClusterFUN <- function(x) {
+    g <- bluster::makeSNNGraph(x, type="jaccard")
+    igraph::cluster_louvain(g)$membership
+}
+pcs <- reducedDim(sce.pbmc, "PCA")
+originals <- myClusterFUN(pcs)
+table(originals) # inspecting the cluster sizes.
+set.seed(0010010100)
+ratios <- bootstrapStability(pcs, FUN=myClusterFUN, clusters=originals)
+dim(ratios)
+pheatmap(ratios, cluster_row=FALSE, cluster_col=FALSE,
+    color=viridis::magma(100), breaks=seq(-1, 1, length.out=101))
+```
+
+6. subclustering 子聚类
+```
+g.full <- buildSNNGraph(sce.pbmc, use.dimred = 'PCA')
+clust.full <- igraph::cluster_walktrap(g.full)$membership
+plotExpression(sce.pbmc, features=c("CD3E", "CCR7", "CD69", "CD44"),
+    x=I(factor(clust.full)), colour_by=I(factor(clust.full)))
+# Repeating modelling and PCA on the subset.
+memory <- 10L
+sce.memory <- sce.pbmc[,clust.full==memory]
+dec.memory <- modelGeneVar(sce.memory)
+sce.memory <- denoisePCA(sce.memory, technical=dec.memory,
+    subset.row=getTopHVGs(dec.memory, n=5000))
+g.memory <- buildSNNGraph(sce.memory, use.dimred="PCA")
+clust.memory <- igraph::cluster_walktrap(g.memory)$membership
+plotExpression(sce.memory, features=c("CD8A", "CD4"),
+    x=I(factor(clust.memory)))
+
+# 快速运行
+set.seed(1000010)
+subcluster.out <- quickSubCluster(sce.pbmc, groups=clust.full,
+    prepFUN=function(x) { # Preparing the subsetted SCE for clustering.
+        dec <- modelGeneVar(x)
+        input <- denoisePCA(x, technical=dec,
+            subset.row=getTopHVGs(dec, prop=0.1),
+            BSPARAM=BiocSingular::IrlbaParam())
+    },
+    clusterFUN=function(x) { # Performing the subclustering in the subset.
+        g <- buildSNNGraph(x, use.dimred="PCA", k=20)
+        igraph::cluster_walktrap(g)$membership
+    }
+)
+
+# One SingleCellExperiment object per parent cluster:
+names(subcluster.out)
+
+# Looking at the subclustering for one example:
+table(subcluster.out[[1]]$subcluster)
+```
+
+#### Cell cycle assignment
+1. 使用周期蛋白
+   Cyclin D is expressed throughout but peaks at G1; cyclin E is expressed highest in the G1/S transition; cyclin A is expressed across S and G2; and cyclin B is expressed highest in late G2 and mitosis
+
+
+```
+library(scater)
+cyclin.genes <- grep("^Ccn[abde][0-9]$", rowData(sce.416b)$SYMBOL)
+cyclin.genes <- rownames(sce.416b)[cyclin.genes]
+cyclin.genes
+plotHeatmap(sce.416b, order_columns_by="label", 
+    cluster_rows=FALSE, features=sort(cyclin.genes))  # Heatmap of the log-normalized expression values
+```
+2. 使用参考数据
+   
+
+```
+library(scRNAseq)
+sce.ref <- BuettnerESCData()
+sce.ref <- logNormCounts(sce.ref)
+sce.ref
+# Find genes that are cell cycle-related.获取细胞周期相关基因便于使结果更准确
+library(org.Mm.eg.db)
+cycle.anno <- select(org.Mm.eg.db, keytype="GOALL", keys="GO:0007049", 
+    columns="ENSEMBL")[,"ENSEMBL"]
+str(cycle.anno)
+# Switching row names back to Ensembl to match the reference.  SingleR
+test.data <- logcounts(sce.416b)
+rownames(test.data) <- rowData(sce.416b)$ENSEMBL
+library(SingleR)
+assignments <- SingleR(test.data, ref=sce.ref, label=sce.ref$phase, 
+    de.method="wilcox", restrict=cycle.anno)
+tab <- table(assignments$labels, colLabels(sce.416b))
+tab
+```
+3. 使用cyclone()分类
+
+```
+set.seed(100)
+library(scran)
+mm.pairs <- readRDS(system.file("exdata", "mouse_cycle_markers.rds", 
+    package="scran"))
+
+# Using Ensembl IDs to match up with the annotation in 'mm.pairs'.
+assignments <- cyclone(sce.416b, mm.pairs, gene.names=rowData(sce.416b)$ENSEMBL)
+plot(assignments$score$G1, assignments$score$G2M,
+    xlab="G1 score", ylab="G2/M score", pch=16)
+# Cells are classified as being in G1 phase if the G1 score is above 0.5 and greater than the G2/M score; in G2/M phase if the G2/M score is above 0.5 and greater than the G1 score; and in S phase if neither score is above 0.5. 
+```
+**去除cell cycle effects**<br>
+1. 去除与细胞周期相关的基因
+
+```
+# 计算判断与细胞周期相关的基因
+library(scRNAseq)
+sce.leng <- LengESCData(ensembl=TRUE)
+# Performing a default analysis without any removal:
+sce.leng <- logNormCounts(sce.leng, assay.type="normcounts")
+dec.leng <- modelGeneVar(sce.leng)
+top.hvgs <- getTopHVGs(dec.leng, n=1000)
+sce.leng <- runPCA(sce.leng, subset_row=top.hvgs)
+# Identifying the likely cell cycle genes between phases,
+# using an arbitrary threshold of 5%.
+library(scater)
+diff <- getVarianceExplained(sce.leng, "Phase")
+discard <- diff > 5
+summary(discard)
+# ... and repeating the PCA without them.
+top.hvgs2 <- getTopHVGs(dec.leng[which(!discard),], n=1000)
+sce.nocycle <- runPCA(sce.leng, subset_row=top.hvgs2)
+fill <- geom_point(pch=21, colour="grey") # Color the NA points.
+gridExtra::grid.arrange(
+    plotPCA(sce.leng, colour_by="Phase") + ggtitle("Before") + fill,
+    plotPCA(sce.nocycle, colour_by="Phase") + ggtitle("After") + fill,
+    ncol=2
+)
+```
+2. 使用contrastive PCA
+即与只存在细胞周期效应的参考数据对比
+
+```
+top.hvgs <- getTopHVGs(dec.416b, p=0.1)
+wild <- sce.416b$phenotype=="wild type phenotype"
+
+set.seed(100)
+library(scPCA)
+con.out <- scPCA(
+    target=t(logcounts(sce.416b)[top.hvgs,]),
+    background=t(logcounts(sce.416b)[top.hvgs,wild]),
+    penalties=0, n_eigen=10, contrasts=100)
+
+# Visualizing the results in a t-SNE.
+sce.con <- sce.416b
+reducedDim(sce.con, "cPCA") <- con.out$x
+sce.con <- runTSNE(sce.con, dimred="cPCA")
+
+# Making the labels easier to read.
+relabel <- c("onco", "WT")[factor(sce.416b$phenotype)]
+scaled <- scale_color_manual(values=c(onco="red", WT="black"))
+
+gridExtra::grid.arrange(
+    plotTSNE(sce.416b, colour_by=I(assignments$phases)) + ggtitle("Before (416b)"),
+    plotTSNE(sce.416b, colour_by=I(relabel)) + scaled,
+    plotTSNE(sce.con, colour_by=I(assignments$phases)) + ggtitle("After (416b)"),
+    plotTSNE(sce.con, colour_by=I(relabel)) + scaled, 
+    ncol=2
+)
+```
+
+
+
+#### Single-nuclei RNA-seq processing
+单细胞细胞核测序分析与单细胞测序分析的不同点主要在于count matrix的构成过程，其中在单细胞核分析中需要将内含子包含进去，因为细胞核中的RNA很多还没有进行剪接。<br>
+单细胞核测序分析需要注意三点：1. count matrix生成问题；2. QC问题；3. 处理环境污染的问题
+
+```
+library(scRNAseq)
+sce <- WuKidneyData()
+sce <- sce[,sce$Technology=="sNuc-10x"]
+sce
+
+# Quality control for stripped nuclei
+# 不应该包括任何线粒体转录本 -- mitochondrial proportion
+library(scuttle)
+sce <- addPerCellQC(sce, subsets=list(Mt=grep("^mt-", rownames(sce))))
+summary(sce$subsets_Mt_percent == 0)
+# 过滤1
+stats <- quickPerCellQC(colData(sce), sub.fields="subsets_Mt_percent")
+colSums(as.matrix(stats))
+# 过滤2
+stats$high_subsets_Mt_percent <- isOutlier(sce$subsets_Mt_percent, 
+    type="higher", min.diff=0.5)
+stats$discard <- Reduce("|", stats[,colnames(stats)!="discard"])
+colSums(as.matrix(stats))
+library(scater)
+plotColData(sce, x="Status", y="subsets_Mt_percent",
+    colour_by=I(stats$high_subsets_Mt_percent))
+
+# 下游分析与scRNA类似
+library(scran)
+set.seed(111)
+
+sce <- logNormCounts(sce[,!stats$discard])
+dec <- modelGeneVarByPoisson(sce)
+sce <- runPCA(sce, subset_row=getTopHVGs(dec, n=4000))
+sce <- runTSNE(sce, dimred="PCA")
+
+library(bluster)
+colLabels(sce) <- clusterRows(reducedDim(sce, "PCA"), NNGraphParam())
+gridExtra::grid.arrange(
+    plotTSNE(sce, colour_by="label", text_by="label"),
+    plotTSNE(sce, colour_by="Status"),
+    ncol=2
+)    
+
+markers <- findMarkers(merged, block=merged$Status, direction="up")
+markers[["3"]][1:10,1:3]
+```
+
