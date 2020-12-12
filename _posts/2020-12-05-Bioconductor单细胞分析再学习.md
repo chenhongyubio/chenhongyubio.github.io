@@ -755,6 +755,127 @@ names(subcluster.out)
 table(subcluster.out[[1]]$subcluster)
 ```
 
+#### Marker gene detection
+1. 类群两两比较
+一般策略是在成对的簇之间执行DE测试，然后将结果合并为单个等级的每个簇的标记基因。
+```
+library(scran)
+markers.pbmc <- findMarkers(sce.pbmc)
+markers.pbmc
+chosen <- "7"    # 选择特定类群的marker
+interesting <- markers.pbmc[[chosen]]
+colnames(interesting)
+```
+
+2. 寻找cluster-specific markers
+仅考虑在涉及目标簇的所有成对比较中差异表达的基因。
+```
+markers.pbmc.up3 <- findMarkers(sce.pbmc, pval.type="all", direction="up")
+interesting.up3 <- markers.pbmc.up3[[chosen]]
+interesting.up3[1:10,1:3]
+# 缺点在于过于严格，对于在少部分类群中都有表达的有趣基因会被筛选掉
+```
+
+3. 平衡stringency 和 generality
+pval.type="all"太严格， pval.type="any"太松；pval.type = "some" 平衡二者关系。
+```
+markers.pbmc.up4 <- findMarkers(sce.pbmc, pval.type="some", direction="up")
+interesting.up4 <- markers.pbmc.up4[[chosen]]
+interesting.up4[1:10,1:3]
+```
+
+4. 使用log-fold change
+结合p-value以及log FC进行筛选
+```
+markers.pbmc.up2 <- findMarkers(sce.pbmc, direction="up", lfc=1)
+interesting.up2 <- markers.pbmc.up2[[chosen]]
+interesting.up2[1:10,1:4]
+```
+
+5. 替代理论算法 
+Wilcoxon rank sum test(更利于检测一些低丰度的基因(在小分群中表达))、binomial test(鉴定在不同簇之间表达比例不同的基因，更严格)
+
+```
+markers.pbmc.wmw <- findMarkers(sce.pbmc, test="wilcox", direction="up")
+names(markers.pbmc.wmw)
+# A value greater than 0.5 indicates that the gene is upregulated in the current cluster compared to the other cluster, while values less than 0.5 correspond to downregulation，一般期望在0.7-0.8
+```
+```
+markers.pbmc.binom <- findMarkers(sce.pbmc, test="binom", direction="up")
+names(markers.pbmc.binom)
+```
+
+6. 传统bulk DE methods
+edgeR and DESeq2，循环进行类群两两比较
+```
+library(limma)
+dge <- convertTo(sce.pbmc)
+uclust <- unique(dge$samples$label)
+all.results <- all.pairs <- list()
+counter <- 1L
+
+for (x in uclust) {
+    for (y in uclust) {
+        if (x==y) break # avoid redundant comparisons.
+
+        # Factor ordering ensures that 'x' is the not the intercept,
+        # so resulting fold changes can be interpreted as x/y.
+        subdge <- dge[,dge$samples$label %in% c(x, y)]
+        subdge$samples$label <- factor(subdge$samples$label, c(y, x))
+        design <- model.matrix(~label, subdge$samples)
+
+        # No need to normalize as we are using the size factors
+        # transferred from 'sce.pbmc' and converted to norm.factors.
+        # We also relax the filtering for the lower UMI counts.
+        subdge <- subdge[calculateAverage(subdge$counts) > 0.1,]
+
+        # Standard voom-limma pipeline starts here.
+        v <- voom(subdge, design)
+        fit <- lmFit(v, design)
+        fit <- treat(fit, lfc=0.5)
+        res <- topTreat(fit, n=Inf, sort.by="none")
+
+        # Filling out the genes that got filtered out with NA's.
+        res <- res[rownames(dge),]
+        rownames(res) <- rownames(dge)
+
+        all.results[[counter]] <- res
+        all.pairs[[counter]] <- c(x, y)
+        counter <- counter+1L
+
+        # Also filling the reverse comparison.
+        res$logFC <- -res$logFC
+        all.results[[counter]] <- res
+        all.pairs[[counter]] <- c(y, x)
+        counter <- counter+1L
+    }
+}
+all.pairs <- do.call(rbind, all.pairs)
+combined <- combineMarkers(all.results, all.pairs, pval.field="P.Value")
+```
+
+7. 结合多种统计方法
+将上述方法得到的结果综合起来，更利于marker gene的判断
+```
+combined <- multiMarkerStats(
+    t=findMarkers(sce.pbmc, direction="up"),
+    wilcox=findMarkers(sce.pbmc, test="wilcox", direction="up"),
+    binom=findMarkers(sce.pbmc, test="binom", direction="up")
+)
+
+# Interleaved marker statistics from both tests for each cluster.
+colnames(combined[["1"]])
+```
+
+8. 去除批次效应等因素
+使用block= 参数或者design= 参数
+
+#### 细胞类型注释
+1. 根据参考数据分配细胞标签 -- SingleR
+2. 使用marker gene sets分配细胞类型 -- AUCell
+3. gene set enrichment analysis on the marker genes  -- 鉴定差异基因进行富集分析
+4. computing gene set activities -- 计算例如GO trem的活性值
+
 #### Cell cycle assignment
 1. 使用周期蛋白
    Cyclin D is expressed throughout but peaks at G1; cyclin E is expressed highest in the G1/S transition; cyclin A is expressed across S and G2; and cyclin B is expressed highest in late G2 and mitosis
@@ -769,8 +890,6 @@ plotHeatmap(sce.416b, order_columns_by="label",
     cluster_rows=FALSE, features=sort(cyclin.genes))  # Heatmap of the log-normalized expression values
 ```
 2. 使用参考数据
-   
-
 ```
 library(scRNAseq)
 sce.ref <- BuettnerESCData()
